@@ -1,0 +1,64 @@
+li#customize-control-archive_sidebar_align img,
+li#customize-control-page_sidebar_align img,
+li#customize-control-post_sidebar_align img {
+    width: 45px;
+    margin: 5px;
+    padding: 3px;
+}
+
+li#customize-control-archive_sidebar_align img:last-child, 
+li#customize-control-page_sidebar_align img:last-child, 
+li#customize-control-post_sidebar_align img:last-child {
+    margin-right: 5px;
+}
+
+.customize-control-kirki .description {
+    font-weight: 400 !important;
+}
+
+#customize-controls .control-section-hitmag-upsell .accordion-section-title:hover,
+#customize-controls .control-section-hitmag-upsell .accordion-section-title:focus {
+	background-color: #ffffff;
+}
+
+.control-section-hitmag-upsell .accordion-section-title .button {
+	margin-top: -3px;
+	margin-left: 8px;
+}
+
+.rtl .control-section-hitmag-upsell .accordion-section-title .button {
+	margin-left:  0;
+	margin-right: 8px;
+}
+
+#accordion-section-hitmag_upsell a.button.button-secondary {
+    background: #00A388;
+    color: #fff;
+    border: none;
+    box-shadow: none;
+}
+
+#customize-control-theme_documentation {
+    margin-bottom: 30px;
+}
+
+#customize-control-taglist_sw .switch input:checked + label:after,
+#customize-control-display_topbar .switch input:checked + label:after,
+#customize-control-excerpt_display .switch input:checked + label:after,
+#customize-control-show_readmore .switch input:checked + label:after,
+#customize-control-single_thumbnail_sw .switch input:checked + label:after,
+#customize-control-postsnav_sw .switch input:checked + label:after,
+#customize-control-authorbox_sw .switch input:checked + label:after,
+#customize-control-relatedposts_sw .switch input:checked + label:after,
+#customize-control-postsnav_sw .switch input:checked + label:after {
+    left: 58px !important;
+}
+
+.customize-control-kirki-switch .switch-off {
+    padding-left: 11px;
+}
+
+#customize-control-show_slider .switch input:checked + label:after,
+#customize-control-hitmag_boxed_layout .switch input:checked + label:after {
+    left: 40px !important;
+}
