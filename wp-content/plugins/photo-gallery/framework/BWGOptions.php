@@ -60,6 +60,7 @@ class WD_BWG_Options {
   public $masonry_show_tag_box = 0;
   public $masonry_show_gallery_title = 0;
   public $masonry_show_gallery_description = 0;
+  public $masonry_image_title = 'none';
   public $masonry_play_icon = 1;
   public $masonry_gallery_download = 0;
   public $masonry_ecommerce_icon_show_hover = 'none';
@@ -118,6 +119,8 @@ class WD_BWG_Options {
   public $image_browser_show_gallery_title = 0;
   public $image_browser_show_gallery_description = 0;
   public $image_browser_show_search_box = 0;
+  public $image_browser_show_sort_images = 0;
+  public $image_browser_show_tag_box = 0;
   public $image_browser_placeholder = 'Search';
   public $image_browser_search_box_width = 180;
   public $image_browser_gallery_download = 0;
@@ -202,6 +205,7 @@ class WD_BWG_Options {
   public $album_masonry_show_tag_box = 0;
   public $show_album_masonry_name = 0;
   public $album_masonry_show_gallery_description = 0;
+  public $album_masonry_image_title = 0;
   public $album_masonry_gallery_download = 0;
   public $album_masonry_ecommerce_icon_show_hover = 'none';
 

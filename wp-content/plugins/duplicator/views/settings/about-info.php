@@ -16,7 +16,7 @@
     }
     table.dup-support-hlp-hdrs td img{margin-left:7px}
     div.dup-support-hlp-txt{padding:10px 4px 4px 4px; text-align:center}
-    div.dup-support-give-area {width:400px; height:185px; float:left; border:1px solid #dfdfdf; border-radius:4px; margin:10px; line-height:18px;box-shadow: 0 8px 6px -6px #ccc;}
+    div.dup-support-give-area {width:400px; height:165px; float:left; border:1px solid #dfdfdf; border-radius:4px; margin:10px; line-height:18px;box-shadow: 0 8px 6px -6px #ccc;}
     div.dup-spread-word {display:inline-block; border:1px solid red; text-align:center}
 	
     img#dup-support-approved { -webkit-animation:approve-keyframe 12s 1s infinite alternate backwards}
@@ -24,7 +24,8 @@
     form#dup-donate-form input:hover {opacity:1.0;}
     img#dup-img-5stars {opacity:0.7;}
     img#dup-img-5stars:hover {opacity:1.0;}
-	
+	div.social-item {float:right; width: 170px; padding:10px 10px 20px 0px; border:0px solid red; text-align: left; font-size:20px}
+
 	/* EMAIL AREA */
 	div.dup-support-email-area {width:825px; height:355px; border:1px solid #dfdfdf; border-radius:4px; margin:10px; line-height:18px;box-shadow: 0 8px 6px -6px #ccc;}
 	#mce-EMAIL {font-size:20px; height:40px; width:500px}
@@ -32,12 +33,7 @@
 	#mc-embedded-subscribe { height: 35px; font-size: 16px; font-weight: bold}
 	div.mce_inline_error {width:300px; margin: auto !important}
 	div#mce-responses {margin: auto; padding: 10px; width:500px; font-weight: bold;}
-
 </style>
-
-<script>var switchTo5x = true;</script>
-<script type="text/javascript" src="https://ws.sharethis.com/button/buttons.js"></script>
-<script>stLight.options({publisher: "1a44d92e-2a78-42c3-a32e-414f78f9f484"});</script> 
 
 <div class="wrap dup-wrap dup-support-all">
 	
@@ -56,7 +52,7 @@
             </tr>
         </table><br/>
 
-        <!-- PARTNER WITH US -->
+        <!-- RATE PLUGIN -->
         <div class="dup-support-give-area">
             <table class="dup-support-hlp-hdrs">
                 <tr >
@@ -70,7 +66,7 @@
                     <td valign="top">
                         <a href="https://wordpress.org/support/plugin/duplicator/reviews/?filter=5" target="vote-wp"><img id="dup-img-5stars" src="<?php echo DUPLICATOR_PLUGIN_URL ?>assets/img/5star.png" /></a>
                         <div  style=" font-size: 16px; font-weight: bold">
-							<a href="https://wordpress.org/support/plugin/duplicator/reviews/?filter=5" target="vote-wp"><?php _e('Leave 5 Stars', 'duplicator') ?></a>
+							<a href="https://wordpress.org/support/plugin/duplicator/reviews/?filter=5" target="vote-wp"><?php _e('Support us with a 5 star review!', 'duplicator') ?></a>
 						</div>
                     </td>
                 </tr>
@@ -87,21 +83,24 @@
                 </tr>
             </table>
             <div class="dup-support-hlp-txt">
-                <?php
-                $title = __("Duplicate Your WordPress", 'duplicator');
-                $summary = __("Rapid WordPress Duplication by snapcreek.com", 'duplicator');
-                $share_this_data = "st_url='" . DUPLICATOR_HOMEPAGE . "' st_title='{$title}' st_summary='{$summary}'";
-                ?>
-                <div style="width:100%; padding:20px 10px 0px 10px" align="center">
-                    <span class='st_facebook_vcount' displayText='Facebook' <?php echo $share_this_data; ?> ></span>
-                    <span class='st_twitter_vcount' displayText='Tweet' <?php echo $share_this_data; ?> ></span>
-                    <span class='st_googleplus_vcount' displayText='Google +' <?php echo $share_this_data; ?> ></span>
-                    <span class='st_linkedin_vcount' displayText='LinkedIn' <?php echo $share_this_data; ?> ></span>
-                    <span class='st_email_vcount' displayText='Email' <?php echo $share_this_data; ?> ></span>
-                </div><br/>
+				<div class="social-images">
+					<a href="https://www.facebook.com/sharer/sharer.php?u=https%3A//snapcreek.com/duplicator/duplicator-free/" target="_blank">
+						<div class="social-item"><i class="fa fa-facebook-square fa-lg"></i> <?php _e('Facebook', 'duplicator') ?></div>
+					</a>
+					<a href="https://twitter.com/home?status=Checkout%20the%20WordPress%20Duplicator%20plugin!%20%0Ahttps%3A//snapcreek.com/duplicator/duplicator-free/"  target="_blank">
+						<div class="social-item"><i class="fa fa-twitter-square fa-lg"></i> <?php _e('Twitter', 'duplicator') ?></div>
+					</a>
+					<a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A//snapcreek.com/duplicator/duplicator-free/&title=WordPress%20Duplicator%20Plugin&summary=&source=" target="_blank">
+						<div class="social-item"><i class="fa fa-linkedin-square fa-lg"></i> <?php _e('LinkedIn', 'duplicator') ?></div>
+					</a>
+					<a href="https://plus.google.com/share?url=https%3A//snapcreek.com/duplicator/duplicator-free/" target="_blank">
+						<div class="social-item"><i class="fa fa-google-plus-square fa-lg"></i> <?php _e('Google+', 'duplicator') ?></div>
+					</a>
+				</div>
             </div>
         </div>
         <br style="clear:both" /><br/>
+
 		
 		<!-- STAY IN THE LOOP  -->
         <div class="dup-support-email-area">
@@ -141,7 +140,7 @@
 									</div>
                                     <div style="margin-top:10px; margin-left:100px; width: 650px;text-align:left">
                                         <small>
-                                            <input type="checkbox" name="privacy" id="privacy-checkbox"></input>
+                                            <input type="checkbox" name="privacy" id="privacy-checkbox"/>
                                             <label for="privacy-checkbox" style="padding-left:5px; display:block; margin-top:-20px; margin-left:20px;">Check box  this box if you would like us to contact you by email with helpful information about Duplicator and other Snap Creek products.<br/></br> We will process your data in accordance with our <a target="_blank" href="//snapcreek.com/privacy-policy">privacy policy</a>. You may withdraw this consent at any time by <a target="_blank" href="mailto:admin@snapcreek.com">emailing us</a> or updating your information by clicking the unsubscribe link in the emails you receive.</span></label>
                                         </small>
 
@@ -161,19 +160,16 @@
             </div>
         </div>
         <br style="clear:both" /><br/>
-		
-		
-		<!--div style='margin: auto; text-align: center; margin-top: 20px'>
-			<a href="http://lifeinthegrid.com/tools" target="_blank"  class="button button-large button-primary">
-				<i class="fa fa-rocket" style="margin-right:8px"></i><?php _e('Get More Great Tools', 'duplicator') ?>...
-			</a>
-		</div-->
-
 
     </div>
 </div><br/><br/><br/><br/>
 <script>
 	jQuery(document).ready(function($){
+
+		Duplicator.ProvideFeedback = function()
+		{
+			window.open('https://snapcreek.com/duplicator/survey-features/','_blank');
+		}
 
         $('input[type="checkbox"][name="privacy"]').change(function() {
         if(this.checked) {

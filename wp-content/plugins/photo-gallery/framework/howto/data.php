@@ -47,8 +47,10 @@ $howto = array(
         'function' => ''
       ),
     )
-  ),
-  2 => array(
+  )
+);
+if ( !empty($params['shortcode_id']) ) {
+  $howto[] = array(
     'title' => __('Advanced: PHP code', BWG()->prefix),
     'description' => sprintf(__('%s This code should be inserted into a PHP file. This is a more advanced method of publishing and should be used in case you want the galleries to be integrated into your theme files ( for example in your website header or footer area ). You can\'t insert this code into your post / page editor.', BWG()->prefix), '<span class="wh-howto-attention">' . __('Attention:', BWG()->prefix) . '</span>'),
     'content' => array(
@@ -69,10 +71,10 @@ $howto = array(
         'content' => __('The Photo Gallery will now appear in the section of the site you’ve chosen.', BWG()->prefix),
         'screenshot' => '',
         'function' => ''
-      ),
+      )
     )
-  ),
-);
+  );
+}
 function bwg_howto_php_code($params) {
   ?>
   <script>

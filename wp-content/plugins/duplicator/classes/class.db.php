@@ -78,43 +78,44 @@ class DUP_DB extends wpdb
 	 *
      * @return boolean|string
      */
-	public static function getWindowsMySqlDumpRealPath() {
-		if(function_exists('php_ini_loaded_file'))
-		{
-			$get_php_ini_path = php_ini_loaded_file();
-			if(file_exists($get_php_ini_path))
-			{
-				$search = array(
-					dirname(dirname($get_php_ini_path)).'/mysql/bin/mysqldump.exe',
-					dirname(dirname(dirname($get_php_ini_path))).'/mysql/bin/mysqldump.exe',
-					dirname(dirname($get_php_ini_path)).'/mysql/bin/mysqldump',
-					dirname(dirname(dirname($get_php_ini_path))).'/mysql/bin/mysqldump',
-				);
+	public static function getWindowsMySqlDumpRealPath()
+	{
+		try {
+			if (function_exists('php_ini_loaded_file')) {
+				$get_php_ini_path = php_ini_loaded_file();
+				if (@file_exists($get_php_ini_path)) {
+					$search = array(
+						dirname(dirname($get_php_ini_path)).'/mysql/bin/mysqldump.exe',
+						dirname(dirname(dirname($get_php_ini_path))).'/mysql/bin/mysqldump.exe',
+						dirname(dirname($get_php_ini_path)).'/mysql/bin/mysqldump',
+						dirname(dirname(dirname($get_php_ini_path))).'/mysql/bin/mysqldump',
+					);
 
-				foreach($search as $mysqldump)
-				{
-					if(file_exists($mysqldump))
-					{
-						return str_replace("\\","/",$mysqldump);
+					foreach ($search as $mysqldump) {
+						if (@file_exists($mysqldump)) {
+							return str_replace("\\", "/", $mysqldump);
+						}
 					}
 				}
 			}
+
+			unset($search);
+			unset($get_php_ini_path);
+
+			return false;
+			
+		} catch(Exception $ex) {
+			return false;
 		}
-
-		unset($search);
-		unset($get_php_ini_path);
-
-		return false;
 	}
 
-    /**
+	/**
      * Returns the mysqldump path if the server is enabled to execute it otherwise false
 	 *
      * @return boolean|string
      */
     public static function getMySqlDumpPath()
     {
-
         //Is shell_exec possible
         if (!DUP_Util::hasShellExec()) {
             return false;
@@ -123,21 +124,20 @@ class DUP_DB extends wpdb
         $custom_mysqldump_path = DUP_Settings::Get('package_mysqldump_path');
         $custom_mysqldump_path = (strlen($custom_mysqldump_path)) ? $custom_mysqldump_path : '';
 
-        //Common Windows Paths
+        //COMMON WINDOWS PATHS
         if (DUP_Util::isWindows()) {
             $paths = array(
                 $custom_mysqldump_path,
-                self::getWindowsMySqlDumpRealPath(),
+				self::getWindowsMySqlDumpRealPath(),
                 'C:/xampp/mysql/bin/mysqldump.exe',
                 'C:/Program Files/xampp/mysql/bin/mysqldump',
                 'C:/Program Files/MySQL/MySQL Server 6.0/bin/mysqldump',
                 'C:/Program Files/MySQL/MySQL Server 5.5/bin/mysqldump',
                 'C:/Program Files/MySQL/MySQL Server 5.4/bin/mysqldump',
-                'C:/Program Files/MySQL/MySQL Server 5.1/bin/mysqldump',
-                'C:/Program Files/MySQL/MySQL Server 5.0/bin/mysqldump',
+				'C:/wamp64/bin/mysql/mysql5.7.21/bin',
             );
 
-            //Common Linux Paths
+        //COMMON LINUX PATHS
         } else {
             $path1     = '';
             $path2     = '';
@@ -161,15 +161,25 @@ class DUP_DB extends wpdb
                 '/usr/bin/mysqldump',
                 '/opt/local/lib/mysql6/bin/mysqldump',
                 '/opt/local/lib/mysql5/bin/mysqldump',
-                '/opt/local/lib/mysql4/bin/mysqldump',
             );
         }
 
-        // Find the one which works
+        //Try to find a path that works.  With open_basedir enabled, the file_exists may not work on some systems
+		//So we fallback and try to use exec as a last resort
+		$exec_available = function_exists('exec');
         foreach ($paths as $path) {
-            if(file_exists($path)) {
-				if (DUP_Util::isExecutable($path))
+            if(@file_exists($path)) {
+				if (DUP_Util::isExecutable($path)) {
 					return $path;
+				}
+			} elseif ($exec_available) {
+				$out = array();
+				$rc  = -1;
+				$cmd = $path . ' --help';
+				@exec($cmd, $out, $rc);
+				if ($rc === 0) {
+					return $path;
+				}
 			}
         }
 

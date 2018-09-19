@@ -288,7 +288,7 @@ class AlbumsModel_bwg {
     $slug = WDWLibrary::get('slug');
     $slug = $this->create_unique_slug((empty($slug) ? $name : $slug), $id);
     $old_slug = WDWLibrary::get('old_slug');
-    $published = WDWLibrary::get('published', 0);
+	$published = WDWLibrary::get('published', 0);
     $preview_image = WDWLibrary::get('preview_image');
     $description = WDWLibrary::get('description', '', FALSE);
     $albumgallery_ids = WDWLibrary::get('albumgallery_ids');

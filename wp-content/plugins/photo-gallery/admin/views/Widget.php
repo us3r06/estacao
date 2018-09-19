@@ -45,18 +45,16 @@ class WidgetView_bwg {
 		  'order_by' => $order_by,
 		  'image_enable_page' => 0
 		);
+		require_once(BWG()->plugin_dir . '/frontend/controllers/controller.php');
+		$controller_class = 'BWGControllerSite';
 		if ($type == 'gallery') {
 			if ($view_type == 'thumbnails') {
 				$gallery_type = 'thumbnails';
-				require_once(BWG()->plugin_dir . '/frontend/controllers/controller.php');
-				$controller_class = 'BWGControllerSite';
-        $view = 'Thumbnails';
+				$view = 'Thumbnails';
 			}
 			else if ($view_type == 'masonry') {
 				$gallery_type = 'thumbnails_masonry';
-				require_once(BWG()->plugin_dir . '/frontend/controllers/BWGControllerThumbnails_masonry.php');
-				$controller_class = 'BWGControllerThumbnails_masonry';
-        $view = '';
+				$view = 'Thumbnails_masonry';
 			}
 
 			$params['gallery_type']  = $gallery_type;
@@ -67,24 +65,22 @@ class WidgetView_bwg {
 			$params['images_per_page'] = $count;
 		}
 		else {
-			require_once(BWG()->plugin_dir . '/frontend/controllers/BWGControllerAlbum_compact_preview.php');
-			$controller_class = 'BWGControllerAlbum_compact_preview';
-      $view = '';
+			$view = 'Album_compact_preview';
 
 			$params['gallery_type']  = 'album_compact_preview';
 			$params['album_id'] = $album_id;
 			$params['compuct_albums_per_page'] = $count;
-			$params['compuct_album_thumb_width']   = $width;
-			$params['compuct_album_thumb_height']  = $height;
-			$params['compuct_album_image_thumb_width']   = $width;
-			$params['compuct_album_image_thumb_height']  = $height;
+			$params['compuct_album_thumb_width'] = $width;
+			$params['compuct_album_thumb_height'] = $height;
+			$params['compuct_album_image_thumb_width'] = $width;
+			$params['compuct_album_image_thumb_height'] = $height;
 			$params['compuct_album_enable_page'] = 0;
 		}
 		$controller = new $controller_class($view);
-		global $bwg;
+    global $bwg;
 		$pairs = WDWLibrary::get_shortcode_option_params( $params );
 		$controller->execute($pairs, 1, $bwg);
-		$bwg++;
+    $bwg++;
 		// After widget.
 		echo $after_widget;
 	}
@@ -110,10 +106,13 @@ class WidgetView_bwg {
 			'theme_id' => 0,
 		);		
 		$instance = wp_parse_args( (array) $instance, $defaults );
+    if (!isset($instance['view_type'])) {
+      $instance['view_type'] = "thumbnails";
+    }
     ?>    
 		<p>
 		  <label for="<?php echo $id_title; ?>"><?php _e('Title:', BWG()->prefix); ?></label>
-		  <input class="widefat" id="<?php echo $id_title; ?>" name="<?php echo $name_title; ?>'" type="text" value="<?php echo $instance['title']; ?>"/>
+		  <input class="widefat" id="<?php echo $id_title; ?>" name="<?php echo $name_title; ?>'" type="text" value="<?php echo htmlspecialchars( $instance['title'] ); ?>"/>
 		</p>
 		<p>
 		  <label for="<?php echo $id_show; ?>"><?php _e('Type:', BWG()->prefix); ?></label><br>
@@ -123,7 +122,7 @@ class WidgetView_bwg {
 		<p id="p_galleries" style="display:<?php echo ($instance['type'] == "gallery") ? "" : "none" ?>;">
 		  <label for="<?php echo $id_gallery_id; ?>"><?php _e('Galleries:', BWG()->prefix); ?></label><br>
 		  <select name="<?php echo $name_gallery_id; ?>" id="<?php echo $id_gallery_id; ?>" class="widefat">
-			<option value="0"><?php _e('Select', BWG()->prefix); ?></option>
+			<option value="0"><?php _e('All images', BWG()->prefix); ?></option>
 			<?php
 			foreach ($gallery_rows as $gallery_row) {
 			  ?>

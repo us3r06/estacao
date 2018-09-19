@@ -45,6 +45,7 @@ wp_print_scripts('jquery-ui-tabs');
   }
   #wd_howto_container * {
     box-sizing: border-box;
+	font-size: 14px;
   }
   #wd_howto_container {
     position: fixed;
@@ -55,14 +56,14 @@ wp_print_scripts('jquery-ui-tabs');
     background: #000000b3;
     z-index: 100500;
   }
-  .wd-howto-overlay {
+  #wd_howto_container .wd-howto-overlay {
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
   }
-  .wd-howto-wrap {
+  #wd_howto_container .wd-howto-wrap {
     background: #fff;
     font-size: 0;
     height: 100%;
@@ -76,7 +77,7 @@ wp_print_scripts('jquery-ui-tabs');
     max-width: 955px;
     max-height: 600px;
   }
-  .wd-howto-menu {
+  #wd_howto_container .wd-howto-menu {
     display: inline-block;
     font-size: initial;
     background: #FBFCFD;
@@ -88,7 +89,7 @@ wp_print_scripts('jquery-ui-tabs');
     vertical-align: top;
     padding: 20px;
   }
-  .wd-howto-content {
+  #wd_howto_container .wd-howto-content {
     display: inline-block;
     font-size: initial;
     background: #FFFFFF;
@@ -101,7 +102,7 @@ wp_print_scripts('jquery-ui-tabs');
     overflow-x: hidden;
     overflow-y: scroll;
   }
-  .wd-howto-title {
+  #wd_howto_container .wd-howto-title {
     color: #323A45;
     font-family: Ubuntu;
     font-size: 22px;
@@ -129,12 +130,12 @@ wp_print_scripts('jquery-ui-tabs');
   #wd_howto_container li.ui-tabs-active {
     color: #2160B5;
   }
-  .wd-howto-divider-horizontal {
+  #wd_howto_container .wd-howto-divider-horizontal {
     border: #0000000d 1px solid;
     margin-top: 20px;
     width: 100%;
   }
-  .wd-howto-divider-vertical {
+  #wd_howto_container .wd-howto-divider-vertical {
     border: #0000000d 1px solid;
     width: 0;
     height: calc(100% - 30px);
@@ -147,10 +148,10 @@ wp_print_scripts('jquery-ui-tabs');
     font-weight: 300;
     line-height: 18px;
   }
-  .wh-howto-attention {
+  #wd_howto_container .wh-howto-attention {
     color: #FD3C31;
   }
-  .wd-howto-numeration {
+  #wd_howto_container .wd-howto-numeration {
     color: #FFFFFF;
     display: inline-block;
     background: #29B311;
@@ -164,11 +165,11 @@ wp_print_scripts('jquery-ui-tabs');
     text-align: center;
     vertical-align: middle;
   }
-  .wd-howto-content-wrap {
+  #wd_howto_container .wd-howto-content-wrap {
     margin-top: 20px;
     position: relative;
   }
-  .wd-howto-content-title {
+  #wd_howto_container .wd-howto-content-title {
     display: inline-block;
     color: #323A45;
     line-height: 18px;
@@ -177,7 +178,7 @@ wp_print_scripts('jquery-ui-tabs');
     font-weight: 400;
     vertical-align: middle;
   }
-  .wd-howto-content-content {
+  #wd_howto_container .wd-howto-content-content {
     color: #323A45;
     line-height: 18px;
     font-family: Ubuntu;
@@ -185,26 +186,26 @@ wp_print_scripts('jquery-ui-tabs');
     font-weight: 300;
     margin-top: 10px;
   }
-  .wd-howto-screenshot {
+  #wd_howto_container .wd-howto-screenshot {
     margin: 20px 0;
     width: 100%;
   }
-  .wd-howto-mobile {
+  #wd_howto_container .wd-howto-mobile {
     display: none;
   }
-  .wd-howto-content-left,
-  .wd-howto-content-right {
+  #wd_howto_container .wd-howto-content-left,
+  #wd_howto_container .wd-howto-content-right {
     display: inline-block;
     vertical-align: top;
   }
-  .wd-howto-content-left {
+  #wd_howto_container .wd-howto-content-left {
     width: 40px;
     height: 100%;
     position: absolute;
     top: 0;
     bottom: 0;
   }
-  .wd-howto-content-right {
+  #wd_howto_container .wd-howto-content-right {
     padding-left: 40px;
     width: calc(100% - 40px);
     height: 100%;
@@ -217,7 +218,7 @@ wp_print_scripts('jquery-ui-tabs');
     font-size: 30px;
     cursor: pointer;
   }
-  .wd-howto-loading-image {
+  #wd_howto_container .wd-howto-loading-image {
     width: 50px;
   }
   @media (max-width:1000px) {
@@ -231,41 +232,41 @@ wp_print_scripts('jquery-ui-tabs');
     }
   }
   @media (max-width:768px) {
-    .wd-howto-content {
+    #wd_howto_container .wd-howto-content {
       padding: 16px;
     }
-    .wd-howto-divider-horizontal {
+    #wd_howto_container .wd-howto-divider-horizontal {
       display: none;
     }
-    .wd-howto-mobile .wd-howto-divider-horizontal {
+    #wd_howto_container .wd-howto-mobile .wd-howto-divider-horizontal {
       width: 768px;
       margin-left: -16px;
       display: block;
     }
-    .wd-howto-divider-vertical {
+    #wd_howto_container .wd-howto-divider-vertical {
       height: calc(100% - 10px);
       margin: 5px 9px;
     }
-    .wd-howto-menu {
+    #wd_howto_container .wd-howto-menu {
       left: -310px;
       position: absolute;
       width: 310px;
       z-index: 100501;
       transition: left 0.5s;
     }
-    .wd-howto-menu-opened {
+    #wd_howto_container .wd-howto-menu-opened {
       left: 0;
     }
-    .wd-howto-content {
+    #wd_howto_container .wd-howto-content {
       width: 100%;
     }
-    .wd-howto-wrap {
+    #wd_howto_container .wd-howto-wrap {
       width: 100%;
       height: 100%;
       max-width: none;
       max-height: none;
     }
-    .wd-howto-mobile {
+    #wd_howto_container .wd-howto-mobile {
       display: initial;
       position: absolute;
       top: 0;
@@ -273,31 +274,31 @@ wp_print_scripts('jquery-ui-tabs');
       background-color: #FFFFFF;
       z-index: 100500;
     }
-    .wd-howto-content {
+    #wd_howto_container .wd-howto-content {
       padding-top: 60px;
     }
-    .wd-howto-desktop {
+    #wd_howto_container .wd-howto-desktop {
       display: none;
     }
     #wd_howto_container .dashicons-menu {
       color: #414852;
       cursor: pointer;
     }
-    .wd-howto-title {
+    #wd_howto_container .wd-howto-title {
       font-size: 16px;
       line-height: 20px;
     }
-    .wd-howto-title-desktop {
+    #wd_howto_container .wd-howto-title-desktop {
       margin-top: 14px;
       font-size: 14px;
     }
-    .wd-howto-content-title {
+    #wd_howto_container .wd-howto-content-title {
       font-size: 14px;
     }
-    .wd-howto-content-content {
+    #wd_howto_container .wd-howto-content-content {
       font-size: 12px;
     }
-    .wd-howto-numeration {
+    #wd_howto_container .wd-howto-numeration {
       width: 20px;
       height: 20px;
       font-size: 12px;
@@ -309,7 +310,7 @@ wp_print_scripts('jquery-ui-tabs');
     #wd_howto_container li {
       font-size: 12px;
     }
-    .wd-howto-menu-overlay {
+    #wd_howto_container .wd-howto-menu-overlay {
       position: fixed;
       top: 0;
       right: 0;
@@ -326,10 +327,10 @@ wp_print_scripts('jquery-ui-tabs');
       cursor: pointer;
     }
   }
+  .bwg-howto-button:last-child {
+    float: right;
+  }
 </style>
-<button class="button button-secondary button-large" onclick="wd_how_to_use(); return false;">
-  <?php _e('How to use', BWG()->prefix); ?>
-</button>
 <div id="wd_howto_container" class="hidden">
   <div class="wd-howto-overlay" onclick="wd_how_to_use(); return false;"></div>
   <div id="wd_howto_wrap" class="wd-howto-wrap">
@@ -404,4 +405,7 @@ wp_print_scripts('jquery-ui-tabs');
     </div>
   </div>
 </div>
+<button type="button" class="button button-secondary button-large bwg-howto-button" onclick="wd_how_to_use(); return false;">
+  <?php _e('How to use', BWG()->prefix); ?>
+</button>
 <?php

@@ -3,7 +3,7 @@
  * Plugin Name: Photo Gallery
  * Plugin URI: https://10web.io/plugins/wordpress-photo-gallery/
  * Description: This plugin is a fully responsive gallery plugin with advanced functionality.  It allows having different image galleries for your posts and pages. You can create unlimited number of galleries, combine them into albums, and provide descriptions and tags.
- * Version: 1.4.16
+ * Version: 1.5.4
  * Author: Photo Gallery Team
  * Author URI: https://10web.io/pricing/
  * License: GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -81,8 +81,8 @@ final class BWG {
     $this->plugin_dir = WP_PLUGIN_DIR . "/" . plugin_basename(dirname(__FILE__));
     $this->plugin_url = plugins_url(plugin_basename(dirname(__FILE__)));
     $this->main_file = plugin_basename(__FILE__);
-    $this->plugin_version = '1.4.16';
-    $this->db_version = '1.4.16';
+    $this->plugin_version = '1.5.4';
+    $this->db_version = '1.5.4';
     $this->prefix = 'bwg';
     $this->nicename = __('Photo Gallery', $this->prefix);
 
@@ -106,11 +106,13 @@ final class BWG {
     add_action('admin_menu', array( $this, 'admin_menu' ) );
 
     // Frontend AJAX actions.
+    add_action('wp_ajax_bwg_frontend_data', array($this, 'frontend_data'));
+    add_action('wp_ajax_nopriv_bwg_frontend_data', array($this, 'frontend_data'));
     add_action('wp_ajax_GalleryBox', array($this, 'frontend_ajax'));
     add_action('wp_ajax_nopriv_GalleryBox', array($this, 'frontend_ajax'));
     add_action('wp_ajax_bwg_captcha', array($this, 'bwg_captcha'));
     add_action('wp_ajax_nopriv_bwg_captcha', array($this, 'bwg_captcha'));
-    if( $this->is_pro ) {
+    if ( $this->is_pro ) {
       add_action('wp_ajax_Share', array( $this, 'frontend_ajax' ));
       add_action('wp_ajax_nopriv_Share', array( $this, 'frontend_ajax' ));
       add_action('wp_ajax_view_facebook_post', array($this, 'bwg_add_embed_ajax'));
@@ -120,6 +122,7 @@ final class BWG {
     }
 
     // Admin AJAX actions.
+    add_action('wp_ajax_galleries_' . $this->prefix , array($this, 'admin_ajax'));
     add_action('wp_ajax_albumsgalleries_' . $this->prefix , array($this, 'admin_ajax'));
     add_action('wp_ajax_bwg_UploadHandler', array($this, 'bwg_UploadHandler'));
     add_action('wp_ajax_addImages', array($this, 'bwg_filemanager_ajax'));
@@ -204,23 +207,20 @@ final class BWG {
 
     add_action('admin_notices', array($this, 'admin_notices'));
 
+	// Privacy policy.
+    add_action( 'admin_init', array($this, 'add_privacy_policy_content') );
     // Prevent adding shortcode conflict with some builders.
+
 	  $this->before_shortcode_add_builder_editor();
 
-    // Privacy policy.
-    add_action( 'admin_init', array($this, 'add_privacy_policy_content') );
+	  // Register widget for Elementor builder.
+    add_action('elementor/widgets/widgets_registered', array($this, 'register_elementor_widgets'));
   }
 
-  function add_privacy_policy_content() {
-    if ( !function_exists( 'wp_add_privacy_policy_content' ) ) {
-      return;
+  public function register_elementor_widgets() {
+    if ( defined('ELEMENTOR_PATH') && class_exists('Elementor\Widget_Base') ) {
+      require_once ($this->plugin_dir . '/admin/controllers/elementorWidget.php');
     }
-
-    $content = __( 'Your name, email address and IP address are collected and stored in our website database when you comment on and/or rate images on our website.', $this->prefix );
-    wp_add_privacy_policy_content(
-	  $this->nicename,
-      wp_kses_post( wpautop( $content, false ) )
-    );
   }
 
   public function register_block_editor_assets($assets) {
@@ -233,6 +233,16 @@ final class BWG {
       $assets['css_path'] = $css_path;
     }
     return $assets;
+  }
+
+  function add_privacy_policy_content() {
+    if ( !function_exists('wp_add_privacy_policy_content') ) {
+      return;
+    }
+    $content = __('When you leave a comment on this site, we send your name, email
+        address, IP address and comment text to example.com. Example.com does
+        not retain your personal data.', BWG()->prefix);
+    wp_add_privacy_policy_content(BWG()->nicename, wp_kses_post(wpautop($content, FALSE)));
   }
 
   public function enqueue_block_editor_assets() {
@@ -331,7 +341,7 @@ final class BWG {
       }
       if ( $wp_editor_message ) {
         ?>
-        <div id="bwg_image_editor_notice" class="notice error is-dismissible" data-action="<?php echo $wp_editor_message_action; ?>">
+        <div id="bwg_image_editor_notice" class="notice notice-warning is-dismissible" data-action="<?php echo $wp_editor_message_action; ?>">
           <?php echo $wp_editor_message; ?>
         </div>
         <?php
@@ -590,6 +600,26 @@ final class BWG {
   /**
    * Frontend AJAX actions.
    */
+  public function frontend_data() {
+    $params = array();
+    $params['id'] = WDWLibrary::get('shortcode_id', 0);
+
+    // Get values for elementor widget.
+    $params['gallery_type'] = WDWLibrary::get('gallery_type', 'thumbnails');
+    $params['gallery_id'] = WDWLibrary::get('gallery_id', 0);
+    $params['tag'] = WDWLibrary::get('tag', 0);
+    $params['album_id'] = WDWLibrary::get('album_id', 0);
+    $params['theme_id'] = WDWLibrary::get('theme_id', 0);
+    $params['ajax'] = TRUE;
+
+    echo $this->shortcode($params);
+
+    die();
+  }
+
+  /**
+   * Frontend AJAX actions.
+   */
   public function frontend_ajax() {
     if (function_exists('switch_to_locale') && function_exists('get_locale')) {
       switch_to_locale(get_locale());
@@ -609,11 +639,11 @@ final class BWG {
     }
   }
 
-  public function shortcode( $params =array() ) {
+  public function shortcode( $params = array() ) {
     if ( is_admin() && defined('DOING_AJAX') && !DOING_AJAX) {
       return;
     }
-    if ( isset($params['id']) ) {
+    if ( isset($params['id']) && $params['id'] ) {
       global $wpdb;
       $shortcode = $wpdb->get_var($wpdb->prepare("SELECT tagtext FROM " . $wpdb->prefix . "bwg_shortcode WHERE id='%d'", $params['id']));
       if ($shortcode) {
@@ -628,10 +658,14 @@ final class BWG {
         return;
       }
     }
+
     // 'gallery_type' is the only parameter not being checked.
     // Checking for incomplete shortcodes.
     if ( isset($params['gallery_type']) ) {
       $pairs = WDWLibrary::get_shortcode_option_params( $params );
+      if ( isset($params['ajax']) ) {
+        $pairs['ajax'] = $params['ajax'];
+      }
       ob_start();
       $this->front_end( $pairs );
       return str_replace( array( "\r\n", "\n", "\r" ), '', ob_get_clean() );
@@ -645,19 +679,17 @@ final class BWG {
    * @param $params
    */
   public function front_end($params) {
-	require_once(BWG()->plugin_dir . '/framework/WDWLibraryEmbed.php');
-    if ($params['gallery_type'] == 'thumbnails' || $params['gallery_type'] == 'slideshow') {
-      require_once(BWG()->plugin_dir . '/frontend/controllers/controller.php');
-      $controller = new BWGControllerSite( ucfirst( $params[ 'gallery_type' ] ) );
+    require_once(BWG()->plugin_dir . '/framework/WDWLibraryEmbed.php');
+    require_once(BWG()->plugin_dir . '/frontend/controllers/controller.php');
+    $controller = new BWGControllerSite( ucfirst( $params[ 'gallery_type' ] ) );
+    if ( WDWLibrary::get('shortcode_id', 0) || isset($params['ajax']) ) {
+      $controller->execute($params, 1, WDWLibrary::get('bwg', 0));
     }
     else {
-      require_once(BWG()->plugin_dir . '/frontend/controllers/BWGController' . ucfirst($params['gallery_type']) . '.php');
-      $controller_class = 'BWGController' . ucfirst($params['gallery_type']) . '';
-      $controller = new $controller_class();
+      global $bwg;
+      $controller->execute($params, 1, $bwg);
+      $bwg++;
     }
-    global $bwg;
-    $controller->execute($params, 1, $bwg);
-    $bwg++;
 
     return;
   }
@@ -746,11 +778,10 @@ final class BWG {
         wp_die();
         break;
       case 'addInstagramGallery':
-        $instagram_user = WDWLibrary::get('instagram_user');
         $instagram_access_token = WDWLibrary::get('instagram_access_token');
         $autogallery_image_number = WDWLibrary::get('autogallery_image_number');
         $whole_post = WDWLibrary::get('whole_post');
-        $data = WDWLibraryEmbed::add_instagram_gallery($instagram_user, $instagram_access_token, $whole_post, $autogallery_image_number);
+        $data = WDWLibraryEmbed::add_instagram_gallery($instagram_access_token, $whole_post, $autogallery_image_number);
         if ( !$data ) {
           echo WDWLibrary::delimit_wd_output(json_encode(array( "error", "Cannot get instagram data" )));
         }
@@ -766,18 +797,18 @@ final class BWG {
         wp_die();
         break;
       case 'addFacebookGallery':
-		$arg = array(
-			'app_id' => WDWLibrary::get('app_id'),
-			'app_secret' => WDWLibrary::get('app_secret'),
-			'album_url' => WDWLibrary::get('album_url'),
-			'album_limit' => WDWLibrary::get('album_limit'),
-			'update_flag' => WDWLibrary::get('update_flag'),
-			'content_type' => WDWLibrary::get('content_type')
-		);
-		if ( has_filter('init_facebook_album_data_bwg') ) {
-			$data = apply_filters('init_facebook_album_data_bwg', array(), $arg);
-			echo json_encode($data);
-		}
+        $arg = array(
+          'app_id' => WDWLibrary::get('app_id'),
+          'app_secret' => WDWLibrary::get('app_secret'),
+          'album_url' => WDWLibrary::get('album_url'),
+          'album_limit' => WDWLibrary::get('album_limit'),
+          'update_flag' => WDWLibrary::get('update_flag'),
+          'content_type' => WDWLibrary::get('content_type'),
+        );
+        if ( has_filter('init_facebook_album_data_bwg') ) {
+          $data = apply_filters('init_facebook_album_data_bwg', array(), $arg);
+          echo json_encode($data);
+        }
         wp_die();
         break;
       default:
@@ -789,8 +820,9 @@ final class BWG {
   public function admin_ajax() {
     $page = WDWLibrary::get('action');
     $allowed_pages = array(
-      'addTags_' . $this->prefix,
+      'galleries_' . $this->prefix,
       'albumsgalleries_' . $this->prefix,
+      'addTags_' . $this->prefix,
       'shortcode_' . $this->prefix,
       'editimage_' . $this->prefix,
       'options_' . $this->prefix,
@@ -868,7 +900,7 @@ final class BWG {
     ob_start();
     $url = add_query_arg(array('action' => 'shortcode_bwg', 'TB_iframe' => '1'), admin_url('admin-ajax.php'));
 	  ?>
-    <a onclick="if ( typeof tb_click == 'function' ) {
+    <a onclick="if ( typeof tb_click == 'function' && (jQuery(this).parent().attr('id').indexOf('elementor') !== -1 || typeof bwg_check_ready == 'function') ) {
             tb_click.call(this);
             bwg_create_loading_block();
             bwg_set_shortcode_popup_dimensions(); } return false;" href="<?php echo $url; ?>" class="bwg-shortcode-btn button" title="<?php _e('Insert Photo Gallery', $this->prefix); ?>">
@@ -903,33 +935,41 @@ final class BWG {
       var bwg_admin_ajax = '<?php echo add_query_arg(array('action' => 'shortcode_' . $this->prefix), admin_url('admin-ajax.php')); ?>';
       var bwg_ajax_url = '<?php echo add_query_arg(array('action' => ''), admin_url('admin-ajax.php')); ?>';
       var bwg_plugin_url = '<?php echo BWG()->plugin_url; ?>';
-
-     /* TODO: jira 484
-     jQuery(document).ready(function () {
-        jQuery("a.bwg-shortcode-btn").on("click", function() {
-          if ( typeof tb_click == 'function' ) {
-            tb_click.call(this);
-            bwg_create_loading_block();
-            bwg_set_shortcode_popup_dimensions(); } return false;
+      jQuery(document).ready(function () {
+        bwg_check_ready = function () {}
+        jQuery(document).keyup(function(e) {
+          if ( e.keyCode == 27 ) {
+            bwg_remove_loading_block();
+          }
         });
-      });*/
+      });
       // Set shortcode popup dimensions.
       function bwg_set_shortcode_popup_dimensions() {
         var H = jQuery(window).height(), W = jQuery(window).width();
+        jQuery("#TB_title").hide().first().show();
         // New
         var tbWindow = jQuery('#TB_window');
         if (tbWindow.size()) {
           tbWindow.width(W).height(H);
           jQuery('#TB_iframeContent').width(W).height(H);
-          tbWindow.css({'top': 0, 'left': 0, 'margin-left': '0', 'z-index': '1000000'});
+          tbWindow.attr('style',
+            'top:'+ '0px !important;' +
+            'left:' + '0px !important;' +
+            'margin-left:' + '0;' +
+            'z-index:' + '1000500;' +
+            'max-width:' + 'none;' +
+            'max-height:' + 'none;' +
+            '-moz-transform:' + 'none;' +
+            '-webkit-transform:' + 'none'
+          );
         }
         // Edit
         var tbWindow = jQuery('.mce-window[aria-label="Photo Gallery"]');
         if (tbWindow.length) {
           // To prevent wp centering window with old sizes.
-          setTimeout(function(){
+          setTimeout(function() {
             tbWindow.width(W).height(H);
-            tbWindow.css({'top': 0, 'left': 0, 'margin-left': '0', 'z-index': '1000000'});
+            tbWindow.css({'top': 0, 'left': 0, 'margin-left': '0', 'z-index': '1000500'});
             tbWindow.find('.mce-window-body').width(W).height(H);
           }, 10);
         }
@@ -951,6 +991,7 @@ final class BWG {
    * Register widget.
    */
   public function register_widgets() {
+    require_once(BWG()->plugin_dir . '/framework/WDWLibraryEmbed.php');
     require_once(BWG()->plugin_dir . '/admin/controllers/Widget.php');
     register_widget("WidgetController_bwg");
     require_once(BWG()->plugin_dir . '/admin/controllers/WidgetSlideshow.php');
@@ -958,6 +999,12 @@ final class BWG {
     if ( $this->is_pro ) {
       require_once(BWG()->plugin_dir . '/admin/controllers/WidgetTags.php');
       register_widget("WidgetTagsController_bwg");
+    }
+    // Allow to work old widgets registered with this name of class added with SiteOrigin builder.
+    register_widget("BWGControllerWidget");
+    register_widget("BWGControllerWidgetSlideshow");
+    if ( $this->is_pro ) {
+      register_widget("BWGControllerWidgetTags");
     }
   }
 
@@ -1177,34 +1224,71 @@ final class BWG {
    */
   public function register_frontend_scripts() {
     $version = BWG()->plugin_version;
-    wp_register_script('bwg_frontend', BWG()->front_url . '/js/bwg_frontend.js', array('jquery'), $version, true);
-    wp_register_style('bwg_frontend', BWG()->front_url . '/css/bwg_frontend.css', array(), $version);
+    $required_styles = array(
+      $this->prefix . '_sumoselect',
+      $this->prefix . '_font-awesome',
+      $this->prefix . '_mCustomScrollbar',
+    );
+	  $required_scripts = array(
+      'jquery',
+    );
+	  // Google fonts.
+    require_once(BWG()->plugin_dir . '/framework/WDWLibrary.php');
+    $google_fonts_link = WDWLibrary::get_all_used_google_fonts();
+    if ( !empty($google_fonts_link) ) {
+      wp_register_style($this->prefix . '_googlefonts', $google_fonts_link, null, null);
+      array_push($required_styles, $this->prefix . '_googlefonts');
+    }
 
-    wp_register_script('bwg_sumoselect', BWG()->front_url . '/js/jquery.sumoselect.min.js', array('jquery'), '3.0.3', true);
-    wp_register_style('bwg_sumoselect', BWG()->front_url . '/css/sumoselect.css', array(), '3.0.3');
+    wp_register_script($this->prefix . '_sumoselect', BWG()->front_url . '/js/jquery.sumoselect.min.js', $required_scripts, '3.0.3', true);
+    wp_register_style($this->prefix . '_sumoselect', BWG()->front_url . '/css/sumoselect.min.css', array(), '3.0.3');
 
     // Styles/Scripts for popup.
-    wp_register_style('bwg_font-awesome', BWG()->front_url . '/css/font-awesome/font-awesome.css', array(), '4.6.3');
-    wp_register_script('bwg_jquery_mobile', BWG()->front_url . '/js/jquery.mobile.js', array('jquery'), $version, true);
-    wp_register_script('bwg_mCustomScrollbar', BWG()->front_url . '/js/jquery.mCustomScrollbar.concat.min.js', array('jquery'), $version, true);
-    wp_register_style('bwg_mCustomScrollbar', BWG()->front_url . '/css/jquery.mCustomScrollbar.css', array(), $version);
+    wp_register_style($this->prefix . '_font-awesome', BWG()->front_url . '/css/font-awesome/font-awesome.min.css', array(), '4.6.3');
+    wp_register_script($this->prefix . '_jquery_mobile', BWG()->front_url . '/js/jquery.mobile.min.js', $required_scripts, $version, true);
+    wp_register_script($this->prefix . '_mCustomScrollbar', BWG()->front_url . '/js/jquery.mCustomScrollbar.concat.min.js', $required_scripts, $version, true);
+    wp_register_style($this->prefix . '_mCustomScrollbar', BWG()->front_url . '/css/jquery.mCustomScrollbar.min.css', array(), $version);
 
-    wp_register_script('jquery-fullscreen', BWG()->front_url . '/js/jquery.fullscreen-0.4.1.js', array('jquery'), '0.4.1', true);
-    wp_register_script('bwg_gallery_box', BWG()->front_url . '/js/bwg_gallery_box.js', array('jquery'), $version, true);
-    wp_register_script('bwg_embed', BWG()->front_url . '/js/bwg_embed.js', array('jquery'), $version, true);
-    if ( $this->is_pro ) {
-      wp_register_script('bwg_raty', BWG()->front_url . '/js/jquery.raty.js', array( 'jquery' ), '2.5.2', true);
-      wp_register_script('bwg_featureCarousel', BWG()->plugin_url . '/js/jquery.featureCarousel.js', array( 'jquery' ), $version, true);
+    wp_register_script($this->prefix . '_jquery-fullscreen', BWG()->front_url . '/js/jquery.fullscreen-0.4.1.min.js', $required_scripts, '0.4.1', true);
+    wp_register_script($this->prefix . '_gallery_box', BWG()->front_url . '/js/bwg_gallery_box.js', $required_scripts, $version, true);
+    wp_register_script($this->prefix . '_embed', BWG()->front_url . '/js/bwg_embed.js', $required_scripts, $version, true);
+    array_push($required_scripts,
+        $this->prefix . '_sumoselect',
+        $this->prefix . '_jquery_mobile',
+        $this->prefix . '_mCustomScrollbar',
+        $this->prefix . '_jquery-fullscreen',
+        $this->prefix . '_gallery_box',
+        $this->prefix . '_embed'
+		);
+
+	  if ( $this->is_pro ) {
+      wp_register_script($this->prefix . '_raty', BWG()->front_url . '/js/jquery.raty.min.js', $required_scripts, '2.5.2', true);
+      wp_register_script($this->prefix . '_featureCarousel', BWG()->plugin_url . '/js/jquery.featureCarousel.min.js', $required_scripts, $version, true);
       // 3D Tag Cloud.
-      wp_register_script('bwg_3DEngine', BWG()->front_url . '/js/3DEngine/3DEngine.js', array('jquery'), '1.0.0', true);
-      wp_register_script('bwg_Sphere', BWG()->front_url . '/js/3DEngine/Sphere.js', array('jquery'), '1.0.0', true);
+      wp_register_script($this->prefix . '_3DEngine', BWG()->front_url . '/js/3DEngine/3DEngine.min.js', $required_scripts, '1.0.0', true);
+	  
+	    array_push($required_scripts,
+        $this->prefix . '_raty',
+        $this->prefix . '_featureCarousel',
+        $this->prefix . '_3DEngine');
     }
-    wp_localize_script('bwg_gallery_box', 'bwg_objectL10n', array(
+
+    wp_register_style($this->prefix . '_frontend', BWG()->front_url . '/css/bwg_frontend.css', $required_styles, $version);
+    wp_register_script($this->prefix . '_frontend', BWG()->front_url . '/js/bwg_frontend.js', $required_scripts, $version, true);
+	
+    if ( !BWG()->options->use_inline_stiles_and_scripts || WDWLibrary::elementor_is_active() ) {
+      wp_enqueue_style($this->prefix . '_frontend');
+      wp_enqueue_script($this->prefix . '_frontend');
+    }
+
+    wp_localize_script($this->prefix . '_gallery_box', 'bwg_objectL10n', array(
       'bwg_field_required'  => __('field is required.', $this->prefix),
       'bwg_mail_validation' => __('This is not a valid email address.', $this->prefix),
       'bwg_search_result' => __('There are no images matching your search.', $this->prefix),
+      'is_pro' => $this->is_pro,
     ));
-    wp_localize_script('bwg_frontend', 'bwg_objectsL10n', array(
+
+    wp_localize_script($this->prefix . '_frontend', 'bwg_objectsL10n', array(
       'bwg_select_tag'  => __('Select Tag', $this->prefix),
       'bwg_order_by'  => __('Order By', $this->prefix),
       'bwg_search' => __('Search', $this->prefix),
@@ -1220,37 +1304,10 @@ final class BWG {
       'bwg_tag_no_match' => __('No tags found', $this->prefix),
       'bwg_all_tags_selected' => __('All tags selected', $this->prefix),
       'bwg_tags_selected' => __('tags selected', $this->prefix),
+      'play' => __('Play', $this->prefix),
+      'pause' => __('Pause', $this->prefix),
+      'is_pro' => $this->is_pro,
     ));
-
-    // Google fonts.
-    require_once(BWG()->plugin_dir . '/framework/WDWLibrary.php');
-    $google_fonts = WDWLibrary::get_used_google_fonts();
-    if ( !empty($google_fonts) ) {
-      $query = implode("|", str_replace(' ', '+', $google_fonts));
-      $url = 'https://fonts.googleapis.com/css?family=' . $query . '&subset=greek,latin,greek-ext,vietnamese,cyrillic-ext,latin-ext,cyrillic';
-      wp_register_style('bwg_googlefonts', $url, null, null);
-    }
-
-    if (!BWG()->options->use_inline_stiles_and_scripts) {
-      wp_enqueue_style('bwg_frontend');
-      wp_enqueue_style('bwg_font-awesome');
-      wp_enqueue_style('bwg_mCustomScrollbar');
-      wp_enqueue_style('bwg_googlefonts');
-      wp_enqueue_style('bwg_sumoselect');
-      wp_enqueue_script('bwg_frontend');
-      wp_enqueue_script('bwg_sumoselect');
-      wp_enqueue_script('bwg_jquery_mobile');
-      wp_enqueue_script('bwg_mCustomScrollbar');
-      wp_enqueue_script('jquery-fullscreen');
-      wp_enqueue_script('bwg_gallery_box');
-      wp_enqueue_script('bwg_embed');
-      if ( $this->is_pro ) {
-        wp_enqueue_script('bwg_raty');
-        wp_enqueue_script('bwg_featureCarousel');
-        wp_enqueue_script('bwg_3DEngine');
-        wp_enqueue_script('bwg_Sphere');
-      }
-    }
   }
 
   /**
@@ -1608,19 +1665,18 @@ final class BWG {
 
   public function autoupdate_interval( $schedules ) {
     require_once(BWG()->plugin_dir . '/framework/WDWLibraryEmbed.php');
-    $autoupdate_interval = WDWLibraryEmbed::get_autoupdate_interval();
     $schedules['bwg_autoupdate_interval'] = array(
-      'interval' => 60 * $autoupdate_interval,
+      'interval' => 60 * BWG()->options->autoupdate_interval,
       'display' => __('Photo gallery plugin autoupdate interval.', $this->prefix),
     );
     return $schedules;
   }
 
-  public function social_galleries() {   
+  public function social_galleries() {
     if ( BWG()->options->instagram_access_token != '' ) {
       $this->instagram_galleries();
+      wp_die();
     }
-    wp_die();
   }
 
   public function instagram_galleries() {
@@ -1628,14 +1684,14 @@ final class BWG {
     require_once(BWG()->plugin_dir . '/framework/WDWLibraryEmbed.php');
     /* Array of IDs of instagram galleries.*/
     $response = array();
-    $instagram_galleries = WDWLibraryEmbed::check_instagram_galleries(); 
-	if(!empty($instagram_galleries[0]))
-    {
-      foreach ($instagram_galleries as $gallery) {
+    $instagram_galleries = WDWLibraryEmbed::check_instagram_galleries();
+    if ( !empty($instagram_galleries[0]) ) {
+      foreach ( $instagram_galleries as $gallery ) {
         array_push($response, WDWLibraryEmbed::refresh_social_gallery($gallery));
       }
     }
   }
+
 	/**
 	* Plugins loaded actions.
 	*/

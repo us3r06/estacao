@@ -4,7 +4,7 @@
 	Tags: post grid, grid, custom post grid, post type grid, grid display, category filter, custom post, filter, filtering, grid, layout, list, masonry, post, post filter, post layout, taxonomy, taxonomy filter, 
 	Requires at least: 3.8
 	Tested up to: 4.9
-	Stable tag: 2.0.28
+	Stable tag: 2.0.29
 	License: GPLv2 or later
 	License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -103,6 +103,11 @@ then paste this shortcode anywhere in your page to display grid<br />
 2. screenshot-2
 
 == Changelog ==
+
+
+	= 2.0.29 =
+    * 07/09/2018 remove - Removed masonry.js file form plugin used default WP jquery-masonry
+    * 07/09/2018 update - Remove some js & css file loaded globaly, only loaded under post grid edit page.
 
 
 	= 2.0.28 =

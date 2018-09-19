@@ -6,7 +6,7 @@ class EditimageView_bwg {
 
   public function display() {
 	wp_print_scripts('jquery');
-    $popup_width = (int) WDWLibrary::get('width', 800);
+    $popup_width = (int) WDWLibrary::get('width', 650);
     $image_width = $popup_width - 40;
     $popup_height = (int) WDWLibrary::get('height', 500);
     $image_height = $popup_height - 40;
@@ -35,7 +35,7 @@ class EditimageView_bwg {
     <div id="wd-content" style="width:100%; height:100%;">
       <div id="bwg_container_for_media_1" style="width:100%; height:100%; margin:0 auto; text-align:center; vertical-align:middle;">
         <?php if ( !$facebook_post ) { ?>
-			<img id="image_display" src="<?php echo BWG()->upload_url . WDWLibrary::image_url_version($image_url, $modified_date); ?>" style="max-width:100%; max-height:100%" />
+			<img id="image_display" src="<?php echo BWG()->upload_url . WDWLibrary::image_url_version($image_url, $modified_date); ?>" style="max-width:100%; max-height:100%; position: relative; transform: translateY(-50%); top: 50%;" />
         <?php }
 		else { ?>
           <div id="fb-root"></div>
@@ -96,9 +96,9 @@ class EditimageView_bwg {
   }
 
   public function thumb_display() {
-    $popup_width = ((int) (isset($_GET['width']) ? esc_html($_GET['width']) : '800')) - 30;
+    $popup_width = ((int) (isset($_GET['width']) ? esc_html($_GET['width']) : '1000')) - 30;
     $image_width = $popup_width - 40;
-    $popup_height = ((int) (isset($_GET['height']) ? esc_html($_GET['height']) : '500')) - 50;
+    $popup_height = ((int) (isset($_GET['height']) ? esc_html($_GET['height']) : '600')) - 50;
     $image_height = $popup_height - 40;
     $image_id = (isset($_GET['image_id']) ? esc_html($_GET['image_id']) : '0');
     $modified_date = WDWLibrary::get('modified_date', '');
@@ -119,21 +119,27 @@ class EditimageView_bwg {
   public function crop($image_data = array()) {
     $thumb_width = BWG()->options->upload_thumb_width;
     $thumb_height = BWG()->options->upload_thumb_height;
-    $popup_width = ((int) (isset($_GET['width']) ? esc_html($_GET['width']) : '800')) - 50;
+    $popup_width = ((int) WDWLibrary::get('width', 1000)) - 50;
     $image_width = $popup_width - $thumb_width - 70;
-    $popup_height = ((int) (isset($_GET['height']) ? esc_html($_GET['height']) : '500')) - 75;
+    $popup_height = ((int) WDWLibrary::get('height', 600)) - 75;
     $image_height = $popup_height - 70;
-    $image_id = (isset($_GET['image_id']) ? esc_html($_GET['image_id']) : '0');
-    $edit_type = (isset($_POST['edit_type']) ? esc_html($_POST['edit_type']) : '');
-    $x = (isset($_POST['x']) ? (int) $_POST['x'] : 0);
-    $y = (isset($_POST['y']) ? (int) $_POST['y'] : 0);
-    $w = (isset($_POST['w']) ? (int) $_POST['w'] : 0);
-    $h = (isset($_POST['h']) ? (int) $_POST['h'] : 0);
+    $image_id = WDWLibrary::get('image_id','0');
+    $edit_type =  WDWLibrary::get('edit_type','');
+    $task = WDWLibrary::get('task');
+	  $aspect_ratio = WDWLibrary::get('aspect_ratio', 0);
+    $x = (int) WDWLibrary::get('x', 0);
+    $y = (int) WDWLibrary::get('y', 0);
+    $w = (int) WDWLibrary::get('w', 0);
+    $h = (int) WDWLibrary::get('h', 0);
     $modified_date = time();
-    if ( isset($_GET['image_url']) ) {
+    if ( WDWLibrary::get('image_url') ) {
       $image_data = new stdClass();
-      $image_data->image_url = (isset($_GET['image_url']) ? esc_html(stripcslashes($_GET['image_url'])) : '');
-      $image_data->thumb_url = (isset($_GET['thumb_url']) ? esc_html(stripcslashes($_GET['thumb_url'])) : '');
+      $image_data->image_url = WDWLibrary::get('image_url', '');
+      $image_data->thumb_url = WDWLibrary::get('thumb_url', '');
+        if( WDWLibrary::get('data-image-url', '') != '' ) {
+            $image_data->image_url = WDWLibrary::get('data-image-url', '');
+            $image_data->thumb_url = WDWLibrary::get('data-thumb-url', '');
+        }
       $filename = htmlspecialchars_decode(BWG()->upload_dir . $image_data->image_url, ENT_COMPAT | ENT_QUOTES);
       $thumb_filename = htmlspecialchars_decode(BWG()->upload_dir . $image_data->thumb_url, ENT_COMPAT | ENT_QUOTES);
       $form_action = add_query_arg(array(
@@ -142,8 +148,8 @@ class EditimageView_bwg {
                                      'image_id' => $image_id,
                                      'image_url' => $image_data->image_url,
                                      'thumb_url' => $image_data->thumb_url,
-                                     'width' => '800',
-                                     'height' => '500',
+                                     'width' => '1000',
+                                     'height' => '600',
                                      'TB_iframe' => '1',
                                    ), admin_url('admin-ajax.php'));
     }
@@ -155,22 +161,23 @@ class EditimageView_bwg {
                                      'action' => 'editimage_' . BWG()->prefix,
                                      'type' => 'crop',
                                      'image_id' => $image_id,
-                                     'width' => '800',
-                                     'height' => '500',
+                                     'width' => '1000',
+                                     'height' => '600',
                                      'TB_iframe' => '1',
                                    ), admin_url('admin-ajax.php'));
     }
     $image_data->image_url = WDWLibrary::image_url_version($image_data->image_url, $modified_date);
     @ini_set('memory_limit', '-1');
-    list($width_orig, $height_orig, $type_orig) = getimagesize($filename);
-    if ( $edit_type == 'crop' ) {
+    $exp_filename = explode("?", $filename);
+    list( $width_orig, $height_orig, $type_orig ) = getimagesize($exp_filename[0]);
+    if ( $task == 'crop' ) {
 	  if( ! $aspect_ratio ) {
-		 $scale = min( $w / $width_orig, $h / $height_orig );
-		 $thumb_width = $w * $scale;
-        $thumb_height = $h * $scale;
+      $scale = min( $w / $width_orig, $h / $height_orig );
+      $thumb_width = $w * $scale;
+      $thumb_height = $h * $scale;
 	  }
       if ( $type_orig == 2 ) {
-        $img_r = imagecreatefromjpeg($filename);
+        $img_r = imagecreatefromjpeg($exp_filename[0]);
         $dst_r = ImageCreateTrueColor($thumb_width, $thumb_height);
         imagecopyresampled($dst_r, $img_r, 0, 0, $x, $y, $thumb_width, $thumb_height, $w, $h);
         imagejpeg($dst_r, $thumb_filename, BWG()->options->jpeg_quality);
@@ -205,8 +212,7 @@ class EditimageView_bwg {
       }
       else {
         ?>
-        <div class="thumb_message"><strong><?php echo __("You can't crop this type of image.", BWG()->prefix); ?></strong>
-        </div>
+        <div class="message"><strong><?php echo __("You can't crop this type of image.", BWG()->prefix); ?></strong></div>
         <?php
       }
       $where = ' `id` = ' . $image_id;
@@ -214,142 +220,178 @@ class EditimageView_bwg {
       $image_data->image_url = WDWLibrary::image_url_version($image_data->image_url, $updated_image['modified_date']);
     }
     @ini_restore('memory_limit');
+	 // Register and include styles and scripts.
+    BWG()->register_admin_scripts();
+    wp_print_styles(BWG()->prefix . '_tables');
+    wp_print_scripts(BWG()->prefix . '_admin');
     wp_print_scripts('jquery');
     wp_print_scripts('jcrop');
     wp_print_styles('jcrop');
     ?>
     <style>
-      body {
-        height: <?php echo $popup_height; ?>px;
-      }
+		body {
+			height: <?php echo $popup_height; ?>px;
+		}
+		#crop_image {
+			margin-top: 2px;
+		}
+		.spider_crop {
+			float: right;
+      margin-right: 10px!important;
+		}
+		.thumb_preview_td {
+			height: 20px;
+			background-color: #F5F5F5;
+			border-radius: 3px;
+			border: 1px solid #CCCCCC;
+			font-family: sans-serif;
+			font-size: 12px;
+		}
+		.message {
+			min-height: 37px;
+			padding: 0px 0px 2px 0px;
+		}
+		.message_block {
+			padding: 8px 5px;
+			width: 100%;
+			display: block;
+			text-align: center;
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			background: linear-gradient(to top, #ECECEC, #F9F9F9) repeat scroll 0 0 #F1F1F1;
+			background-color: #F5F5F5;
+			border: 1px solid #CCCCCC;
+			border-radius: 3px 3px 3px 3px;
+			box-sizing: border-box;
+			font-family: sans-serif;
+			font-size: 12px;
+			color: #333333;
+		}
+		.crop_and_preview {
+			margin:5px 0;
+			width: 100%;
+		}
 
-      .spider_crop {
-        background: linear-gradient(to top, #ECECEC, #F9F9F9) repeat scroll 0 0 #F1F1F1;
-        cursor: pointer;
-        height: 30px;
-        padding: 2px;
-        -moz-outline-radius: 2px;
-        outline: 1px solid #CCCCCC;
-      }
+    #croped_image_cont {
+      background-color: #F5F5F5;
+      border-radius: 3px;
+      border: 1px solid #CCCCCC;
+      margin-bottom: 5px;
+    }
 
-      .spider_crop:hover {
-        -moz-outline-radius: 2px;
-        outline: 1px solid #999999;
-        padding: 2px;
-      }
+    #success_msg {
+      display: block;
+      margin-bottom: 5px;
+    }
 
-      .jcrop-holder {
-        margin: 0 auto;
-      }
-
-      .thumb_preview {
-        height: 300px;
-        margin: 0 auto;
-        overflow: hidden;
-        width: <?php echo $thumb_width * 300 / $thumb_height; ?>px;
-      }
-
-      #thumb_image_preview {
-        display: none;
-      }
-
-      .thumb_preview_td {
-        height: 20px;
-        background-color: #F5F5F5;
-        border-radius: 3px;
-        border: 1px solid #CCCCCC;
-        font-family: sans-serif;
-        font-size: 12px;
-      }
-
-      .thumb_message {
-        -moz-box-sizing: border-box;
-        -webkit-box-sizing: border-box;
-        background: linear-gradient(to top, #ECECEC, #F9F9F9) repeat scroll 0 0 #F1F1F1;
-        background-color: #F5F5F5;
-        border: 1px solid #CCCCCC;
-        border-radius: 3px 3px 3px 3px;
-        box-sizing: border-box;
-        color: #333333;
-        font-family: sans-serif;
-        font-size: 12px;
-        margin: 5px auto;
-        padding: 8px 5px;
-        width: 100%;
-      }
-
-      #crop_button {
-        display: none;
-        height: 38px;
-        margin-top: 5px;
-        text-align: center;
-      }
+		.jcrop-holder {
+			margin: 0 auto;
+		}
     </style>
-    <?php
-    if ( $edit_type == 'crop' ) {
-      ?>
-      <div class="thumb_message" id="croped_message">
-      <strong><?php echo __('The thumbnail successfully croped.', BWG()->prefix); ?></strong></div><?php
-    }
-    else {
-      ?>
-      <div class="thumb_message" id="thumb_message">
-      <strong><?php echo __('Select the area for the thumbnail.', BWG()->prefix); ?></strong></div><?php
-    }
-    ?>
-    <form method="post" id="crop_image" action="<?php echo $form_action; ?>">
-      <?php wp_nonce_field('editimage_' . BWG()->prefix, 'bwg_nonce'); ?>
-	  <div class="thumb_preview_td" style="padding: 5px;">
-		<input type="checkbox" id="chb" name="aspect_ratio" value="1" checked="checked" onclick="spider_crop_ratio()">
-		<label for="chb"><?php _e('Keep aspect ratio', BWG()->prefix); ?></label>
-	  </div>
-      <div style="height:<?php echo $popup_height - 60; ?>px; width:<?php echo $popup_width; ?>px; margin: 5px auto;">
-        <div id="crop_button">
-          <img title="Crop" class="spider_crop" onclick="spider_crop('crop', 'crop_image')" src="<?php echo BWG()->plugin_url . '/images/crop.png'; ?>" />
-        </div>
-        <table style="height: inherit; top: 80px; position: absolute; width: inherit; margin: 0 auto;">
-          <tr>
-            <td class="thumb_preview_td" style="vertical-align: middle; width: <?php echo ($popup_width - $thumb_width) - 40; ?>px;">
-              <img id="image_view" src="<?php echo BWG()->upload_url . $image_data->image_url; ?>" style="max-width:<?php echo $image_width; ?>px; max-height:<?php echo $image_height; ?>px;" />
-            </td>
-            <td class="thumb_preview_td" style="width:<?php echo $thumb_width + 20; ?>px;">
-              <div class="thumb_preview">
-                <img id="thumb_image_preview" src="<?php echo BWG()->upload_url . $image_data->image_url; ?>">
-              </div>
-            </td>
-          </tr>
-        </table>
+	<div style="padding:0 5px;">
+		<div class="message<?php echo ( $task == 'crop' )  ? ' croped' : '' ?>">
+      <span id="select_msg" class="notice notice-warning"><p><?php _e('Select the area for the thumbnail.', BWG()->prefix); ?></p></span>
+    </div>
+		<form method="post" id="crop_image" action="<?php echo $form_action; ?>" class="wd-form wp-core-ui">
+			<div class="thumb_preview_td" style="padding: 5px;">
+				<input type="checkbox" id="chb" name="aspect_ratio" value="1" onclick="spider_crop_ratio()" checked="checked">
+				<label for="chb"><?php _e('Keep aspect ratio', BWG()->prefix); ?></label>
+			</div>
+		  <?php wp_nonce_field('editimage_' . BWG()->prefix, 'bwg_nonce'); ?>
+		  <div style="max-height:<?php echo $image_height-200; ?>px; margin: 0 auto;">
+		   <table class="crop_and_preview" cellpadding="0" cellspacing="0">
+			  <tr>
+				<td class="thumb_preview_td" style="vertical-align: middle; max-width: <?php echo ($popup_width - $thumb_width) - 40; ?>px; height:409px;" max-width: <?php echo ($popup_height - $thumb_height) - 75; ?>px;">
+				  <img id="image_view" data-mod-date = "<?php echo $updated_image['modified_date'] ?>" src="<?php echo BWG()->upload_url . $image_data->image_url; ?>" data-image-url="<?php echo $image_data->image_url ?>" data-thumb-url="<?php echo $image_data->thumb_url ?>" style="max-width:800px; max-height: 400px; visibility: hidden" />
+				</td>
+			  </tr>
+			</table>
+			<button type="button" class="button button-primary button-large button-hero spider_crop" style="margin-top: 10px" onclick="spider_crop(); return false;"><?php _e('Crop', BWG()->prefix); ?></button>
+		  </div>
+		  <input type="hidden" name="edit_type" id="edit_type" />
+		  <input id="x" type="hidden" name="x" value="" />
+		  <input id="y" type="hidden" name="y" value="" />
+		  <input id="w" type="hidden" name="w" value="" />
+		  <input id="h" type="hidden" name="h" value="" />
+		</form>
+
+    <div id="croped_preview"  class="hidden wp-core-ui">
+      <span id="success_msg" class="notice notice-success"><p><?php _e('The thumbnail was successfully cropped.', BWG()->prefix); ?></p></span>
+      <div id="croped_image_cont" style="height: 445px; display: grid;">
+        <img id='croped_image_thumb'>
       </div>
-      <input type="hidden" name="edit_type" id="edit_type" />
-      <input id="x" type="hidden" name="x" value="" />
-      <input id="y" type="hidden" name="y" value="" />
-      <input id="w" type="hidden" name="w" value="" />
-      <input id="h" type="hidden" name="h" value="" />
-    </form>
-    <script language="javascript">
-      function spider_crop_ratio() {
-        if (document.getElementById("chb").checked == false) {
-          spider_crop_fix("", "");
-        }
-        else {
-          spider_crop_fix("<?php echo BWG()->options->upload_thumb_width; ?>", "<?php echo BWG()->options->upload_thumb_height; ?>");
-        }
-        jQuery('#crop_button').show();
-        jQuery('#thumb_message').hide();
-        jQuery('#croped_message').hide();
-        jQuery('#thumb_image_preview').show();
-      }
-
-      function spider_crop(type, form_id) {
-        document.getElementById("edit_type").value = type;
-        document.getElementById(form_id).submit();
-      }
-      var image_src = window.parent.document.getElementById("image_thumb_<?php echo $image_id; ?>").src;
-		  window.parent.document.getElementById("image_thumb_<?php echo $image_id; ?>").src = image_src + "<?php echo isset($updated_image['modified_date']) && $updated_image['modified_date'] ? '?bwg=' . $updated_image['modified_date'] : ''; ?>";
-
-	    jQuery(window).load(function () {
+      <button type="button" class="button button-secondary button-large spider_crop button-hero" onclick="bwg_reset_crop(); return false;"><?php _e('Edit', BWG()->prefix); ?></button>
+    </div>
+	</div>
+	<script language="javascript">
+	  jQuery(window).load(function () {
         spider_crop_fix("<?php echo $thumb_width * 300 / $thumb_height; ?>", "<?php echo 300; ?>");
       });
+      function spider_crop_ratio() {
+        spider_crop_fix("<?php echo BWG()->options->upload_thumb_width; ?>", "<?php echo BWG()->options->upload_thumb_height; ?>");
+        if ( document.getElementById("chb").checked == false ) {
+          spider_crop_fix();
+        }
+      }
+
+      /* Edit button action after reset */
+      function bwg_reset_crop() {
+        jQuery("#croped_preview").hide();
+        jQuery("#crop_image").show();
+        jQuery('.message').show();
+        jQuery("td.thumb_preview_td").css("height","455x");
+      }
+
+      function spider_crop() {
+        var url = jQuery("#crop_image").attr("action");
+        var data_image_url = jQuery("#image_view").attr("data-image-url");
+        var data_thumb_url = jQuery("#image_view").attr("data-thumb-url");
+        if(!jQuery("#w").val().length) {
+          return;
+        }
+        var post_data = {
+          'task': 'crop',
+          'x' : jQuery("#x").val(),
+          'y' : jQuery("#y").val(),
+          'w' : jQuery("#w").val(),
+          'h' : jQuery("#h").val(),
+          'data-image-url' :  data_image_url,
+          'data-thumb-url' :  data_thumb_url,
+        };
+
+        jQuery.ajax({
+          data: post_data,
+          method: "POST",
+          url: url,
+        })
+        .complete(function( data ) {
+          var params;
+          var mod_date = jQuery("#image_view").attr("data-mod-date");
+          if( mod_date == '' ){
+            params = '?bwg='+Math.random();
+          } else {
+            params = '';
+          }
+          var image_src = window.parent.jQuery("#image_thumb_<?php echo $image_id; ?>").attr("src");
+          window.parent.jQuery("#image_thumb_<?php echo $image_id; ?>").attr("src", image_src + params);
+          var croped_image_src = window.parent.jQuery("#image_thumb_<?php echo $image_id; ?>").attr("src");
+
+          /* Hide Form content of Frame */
+          jQuery("#crop_image").hide();
+
+          jQuery("#croped_image_thumb").attr('src',croped_image_src);
+          jQuery("#croped_preview").show();
+
+          jQuery("#croped_image_thumb").css({
+            'max-width':'800px',
+            'max-height':'455px',
+            'margin': 'auto',
+            'display': 'block',
+          });
+
+          jQuery('.message').hide();
+        });
+      }
 
       function spider_crop_fix(wi, he) {
         var ratio = parseInt('<?php echo $width_orig; ?>') / jQuery('#image_view').width();
@@ -357,18 +399,14 @@ class EditimageView_bwg {
         var thumb_height = parseInt(he);
         if (<?php echo $w; ?> == 0) {
           jQuery('#image_view').Jcrop({
-            onChange: spider_update_thumb,
             onSelect: spider_update_coords,
-            // bgColor: 'black',
             bgOpacity: .7,
             aspectRatio: thumb_width / thumb_height
           });
         }
         else {
           jQuery('#image_view').Jcrop({
-            onChange: spider_update_thumb,
             onSelect: spider_update_coords,
-            // bgColor: 'black',
             bgOpacity: .7,
             setSelect: [ <?php echo $x; ?> / ratio, <?php echo $y; ?> / ratio, <?php echo $x + $w; ?> / ratio, <?php echo $y + $h; ?> / ratio],
             aspectRatio: thumb_width / thumb_height
@@ -382,29 +420,12 @@ class EditimageView_bwg {
         jQuery('#y').val(c.y * ratio);
         jQuery('#w').val(c.w * ratio);
         jQuery('#h').val(c.h * ratio);
-        jQuery('#crop_button').show();
-        jQuery('#thumb_message').hide();
-        jQuery('#croped_message').hide();
-        jQuery('#thumb_image_preview').show();
-        jQuery('.thumb_preview').css("border", "1px solid #CCCCCC");
-      }
-
-      function spider_update_thumb(c) {
-        jQuery('#crop_button').hide();
-        jQuery('#croped_message').show();
-        var thumb_width = parseInt('<?php echo $thumb_width * 300 / $thumb_height; ?>');
-		var thumb_height = 300;
-		var width = (thumb_width / c.w);
-		var height = (thumb_height / c.h);
-		var left = -c.x * (thumb_width / c.w);
-		var top  = -c.y * (thumb_height / c.h);
-		//TODO broken style on preview.
-		if ( !jQuery('#chb').is(':checked') ) {
-		}
-        jQuery('#thumb_image_preview').css("margin-left", left + "px");
-        jQuery('#thumb_image_preview').css("margin-top", top + "px");
-        jQuery('#thumb_image_preview').css("width",  width * jQuery('#image_view').width() + "px");
-        jQuery('#thumb_image_preview').css("height", height * jQuery('#image_view').height() + "px");
+        jQuery('.message').css('visibility', 'hidden');
+        if ( jQuery('.message').hasClass('croped') ) {
+          /* TODO. remove TB_window block.
+          window.parent.tb_remove(); */
+          jQuery('.message').css({ 'visibility':'unset' });
+        }
       }
     </script>
     <?php
@@ -422,8 +443,10 @@ class EditimageView_bwg {
     $filename = htmlspecialchars_decode(BWG()->upload_dir . $image_data->image_url, ENT_COMPAT | ENT_QUOTES);
     $thumb_filename = htmlspecialchars_decode(BWG()->upload_dir . $image_data->thumb_url, ENT_COMPAT | ENT_QUOTES);
     $original_filename = str_replace('/thumb/', '/.original/', $thumb_filename);
-    WDWLibrary::resize_image($original_filename, $filename, BWG()->options->upload_img_width, BWG()->options->upload_img_height);
-    WDWLibrary::resize_image($original_filename, $thumb_filename, BWG()->options->upload_thumb_width, BWG()->options->upload_thumb_height);
+    if ( WDWLibrary::repair_image_original($original_filename) ) {
+      WDWLibrary::resize_image( $original_filename, $filename, BWG()->options->upload_img_width, BWG()->options->upload_img_height );
+      WDWLibrary::resize_image( $original_filename, $thumb_filename, BWG()->options->upload_thumb_width, BWG()->options->upload_thumb_height );
+    }
   }
 
   public function rotate($image_data = array()) {
@@ -766,7 +789,7 @@ class EditimageView_bwg {
     wp_print_scripts('jquery-ui-slider');
     ?>
     <link type="text/css" rel="stylesheet" id="bwg_tables-css" href="<?php echo BWG()->front_url . '/css/bwg_edit_image.css'; ?>" media="all">
-    <link type="text/css" rel="stylesheet" href="<?php echo BWG()->front_url . '/css/font-awesome/font-awesome.css?ver=4.6.3'; ?>">
+    <link type="text/css" rel="stylesheet" href="<?php echo BWG()->front_url . '/css/font-awesome/font-awesome.min.css?ver=4.6.3'; ?>">
     <form method="post" id="bwg_rotate_image" action="<?php echo $form_action; ?>">
       <?php wp_nonce_field('editimage_' . BWG()->prefix, 'bwg_nonce'); ?>
       <div class="main_cont" style="height: <?php echo $popup_height; ?>px;">

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Class used to update and edit and update the wp-config.php
  *
@@ -11,32 +10,38 @@
  */
 class DUPX_WPConfig
 {
-
 	/**
-	 *  Updates the web server config files in Step 1
+	 *  Updates the web server config files in Step 3
 	 *
 	 *  @return null
 	 */
 	public static function updateStandard()
 	{
-		if (!file_exists('wp-config.php')) return;
+		if (!file_exists('wp-config.php'))
+			return;
 
-		$root_path	 = DUPX_U::setSafePath($GLOBALS['CURRENT_ROOT_PATH']);
-		$wpconfig	 = @file_get_contents('wp-config.php', true);
+		$root_path	= DUPX_U::setSafePath($GLOBALS['CURRENT_ROOT_PATH']);
+		$wpconfig	= @file_get_contents('wp-config.php', true);
+
+		$db_port    = is_int($_POST['dbport'])   ? $_POST['dbport'] : 3306;
+		$db_host	= ($db_port == 3306) ? $_POST['dbhost'] : "{$_POST['dbhost']}:{$db_port}";
+		$db_name	= isset($_POST['dbname']) ? DUPX_U::safeQuote($_POST['dbname']) : null;
+		$db_user	= isset($_POST['dbuser']) ? DUPX_U::safeQuote($_POST['dbuser']) : null;
+       	$db_pass	= isset($_POST['dbpass']) ? DUPX_U::safeQuote($_POST['dbpass']) : null;
 
 		$patterns = array(
 			"/'DB_NAME',\s*'.*?'/",
 			"/'DB_USER',\s*'.*?'/",
 			"/'DB_PASSWORD',\s*'.*?'/",
-			"/'DB_HOST',\s*'.*?'/");
-
-		$db_host = ($_POST['dbport'] == 3306) ? $_POST['dbhost'] : "{$_POST['dbhost']}:{$_POST['dbport']}";
+			"/'DB_HOST',\s*'.*?'/"
+		);
 
 		$replace = array(
-			"'DB_NAME', ".'\''.$_POST['dbname'].'\'',
-			"'DB_USER', ".'\''.$_POST['dbuser'].'\'',
-			"'DB_PASSWORD', ".'\''.DUPX_U::pregReplacementQuote($_POST['dbpass']).'\'',
-			"'DB_HOST', ".'\''.$db_host.'\'');
+			"'DB_NAME', "		. "'{$db_name}'",
+			"'DB_USER', "		. "'{$db_user}'",
+			"'DB_PASSWORD', "	. "'{$db_pass}'",
+			"'DB_HOST', "		. "'{$db_host}'"
+		);
 
 		//SSL CHECKS
 		if ($_POST['ssl_admin']) {
@@ -70,13 +75,15 @@ class DUPX_WPConfig
 			}
 		}
 
-		$wpconfig	 = preg_replace($patterns, $replace, $wpconfig);
+        $replace  = array_map('self::customEscape', $replace);
+		$wpconfig = preg_replace($patterns, $replace, $wpconfig);
+
 		file_put_contents('wp-config.php', $wpconfig);
-		$wpconfig	 = null;
+		$wpconfig = null;
 	}
 
 	/**
-	 *  Updates the web server config files in Step 1
+	 *  Updates the web server config files in Step 3
 	 *
 	 *  @return null
 	 */
@@ -151,9 +158,13 @@ class DUPX_WPConfig
 		return $config_file;
 	}
 
-
-	public static function tokenParser($wpconfig_path) {
-
+	/**
+	 *  Used to parse the wp-config.php file
+	 *
+	 *  @return null
+	 */
+	public static function tokenParser($wpconfig_path)
+	{
 		$defines = array();
 		$wpconfig_file = @file_get_contents($wpconfig_path);
 
@@ -197,7 +208,6 @@ class DUPX_WPConfig
 		}
 
 		return $defines;
-
 	}
 
 	private static function tokenStrip($value)
@@ -205,11 +215,14 @@ class DUPX_WPConfig
 		return preg_replace('!^([\'"])(.*)\1$!', '$2', $value);
 	}
 
+	private static function customEscape($str)
+    {
+		return str_replace('\\', '\\\\', $str);
+	}
+
 	private static function isConstant($token)
 	{
 		return $token == T_CONSTANT_ENCAPSED_STRING || $token == T_STRING || $token == T_LNUMBER || $token == T_DNUMBER;
 	}
-
-
 }
 ?>

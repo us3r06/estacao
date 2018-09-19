@@ -70,6 +70,7 @@ class AdminView_bwg {
     $title_id = !empty($params['title_id']) ? $params['title_id'] : '';
     $title_value = !empty($params['title_value']) ? $params['title_value'] : '';
     $add_new_button = !empty($params['add_new_button']) ? $params['add_new_button'] : '';
+    $how_to_button = !empty($params['how_to_button']) ? $params['how_to_button'] : false;
 
     $attributes = '';
     if ( !empty($add_new_button) && is_array($add_new_button) ) {
@@ -97,6 +98,11 @@ class AdminView_bwg {
       }
       ?>
     </h1>
+    <?php
+    if ( $how_to_button ) {
+      require BWG()->plugin_dir . '/framework/howto/howto.php';
+    }
+    ?>
     </div><?php
     return ob_get_clean();
   }
@@ -205,7 +211,7 @@ class AdminView_bwg {
    * @return string
    */
   protected function pagination($page_url, $total, $items_per_page = 20) {
-    $page_number = WDWLibrary::get('paged', 1);
+    $page_number = WDWLibrary::get('paged', 1) < 0 ? 1 : WDWLibrary::get('paged', 1);
     $search = WDWLibrary::get('s', '');
     $orderby = WDWLibrary::get('orderby', '');
     $order = WDWLibrary::get('order', '');

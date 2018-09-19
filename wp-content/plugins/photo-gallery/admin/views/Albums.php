@@ -33,7 +33,8 @@ class AlbumsView_bwg extends AdminView_bwg {
 							'title_class' => 'wd-header',
 							'add_new_button' => array(
 								'href' => add_query_arg(array( 'page' => $params['page'], 'task' => 'edit' ), admin_url('admin.php')),
-							)
+							),
+              'how_to_button' => true,
 						  )
 						);
 		echo $this->search();
@@ -44,7 +45,7 @@ class AlbumsView_bwg extends AdminView_bwg {
 			echo $this->pagination($params['page_url'], $params['total'], $params['items_per_page']);
 		?>
 		</div>
-		<table class="adminlist table table-striped wp-list-table widefat fixed pages media">
+		<table class="images_table adminlist table table-striped wp-list-table widefat fixed pages media bwg-gallery-lists">
 			<thead>
 				<td id="cb" class="column-cb check-column">
 				  <label class="screen-reader-text" for="cb-select-all-1"><?php _e('Select all', BWG()->prefix); ?></label>

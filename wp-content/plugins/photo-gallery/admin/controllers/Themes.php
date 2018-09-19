@@ -223,12 +223,21 @@ class ThemesController_bwg {
    * @param int  $id
    * @param bool $bulk
    */
-public function edit( $id = 0, $bulk = FALSE ) {
-	$reset = WDWLibrary::get('reset', FALSE);
-	// Get Theme data.
-	$row = $this->model->get_row_data($id, $reset);
+  public function edit( $id = 0, $bulk = FALSE ) {
+    $reset = WDWLibrary::get('reset', FALSE);
+    // Get Theme data.
+    $row = $this->model->get_row_data($id, $reset);
     if (!isset($row->container_margin)) {
       $row->container_margin = 1;
+    }
+    if (!isset($row->masonry_container_margin)) {
+      $row->masonry_container_margin = 1;
+    }
+    if (!isset($row->mosaic_container_margin)) {
+      $row->mosaic_container_margin = 1;
+    }
+    if (!isset($row->compact_container_margin)) {
+      $row->compact_container_margin = 1;
     }
 		$current_type = WDWLibrary::get('current_type', 'Thumbnail');
 		$form_action  = add_query_arg( array(
@@ -298,13 +307,13 @@ public function edit( $id = 0, $bulk = FALSE ) {
 			'skew' => __('Skew', BWG()->prefix),
 		);
 
-    $thumbnail_hover_effects = array(
-      'none' => __('None', BWG()->prefix),
-      'rotate' => __('Rotate', BWG()->prefix),
-      'scale' => __('Scale', BWG()->prefix),
-      'zoom' => __('Zoom', BWG()->prefix),
-      'skew' => __('Skew', BWG()->prefix),
-    );
+		$thumbnail_hover_effects = array(
+		  'none' => __('None', BWG()->prefix),
+		  'rotate' => __('Rotate', BWG()->prefix),
+		  'scale' => __('Scale', BWG()->prefix),
+		  'zoom' => __('Zoom', BWG()->prefix),
+		  'skew' => __('Skew', BWG()->prefix),
+		);
 
 		$button_styles = array(
 			'fa-chevron' => __('Chevron', BWG()->prefix),
@@ -321,7 +330,7 @@ public function edit( $id = 0, $bulk = FALSE ) {
 			'square' => __('Square', BWG()->prefix),
 		);
 
-		$active_tab = WDWLibrary::get('active_tab','Thumbnail');
+		$active_tab = WDWLibrary::get('active_tab', 'Thumbnail');
 
 		$params = array(
 			'id' => $id,

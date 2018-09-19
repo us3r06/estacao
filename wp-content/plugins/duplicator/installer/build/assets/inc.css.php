@@ -65,7 +65,25 @@
     div.dlg-serv-info div.hdr {background-color: #dfdfdf; font-weight: bold; margin-top:5px; border-radius: 4px; padding:2px 5px 2px 5px; border: 1px solid silver; font-size: 16px}
 	div#modal-window div.modal-title {background-color:#D0D0D0}
 	div#modal-window div.modal-text {padding-top:10px !important}
-	div.archive-onlydb {color:#DB4B38; font-weight:normal; position:absolute; top:5px; right:20px; font-style:italic; font-size:11px}
+	div.installer-mode {font-weight:normal; position:absolute; top:5px; right:20px; font-style:italic; font-size:11px}
+	i.secure-unlocked {color:maroon;}
+
+	
+	/* ============================
+	INIT 1:SECURE PASSWORD
+	============================ */
+    button.pass-toggle {height:26px; width:26px; position:absolute; top:0px; right:0px; border:1px solid silver;  border-radius:0 4px 4px 0;}
+	button.pass-toggle  i { padding:0; display:block; margin:-4px 0 0 -5px}
+	div.i1-pass-area {width:100%; text-align:center}
+	div.i1-pass-data {padding:30px; margin:auto; text-align:center; width:300px}
+	div.i1-pass-data table {width:100%; border-collapse:collapse; padding:0}
+	div.i1-pass-data label {font-weight:bold}
+	div.i1-pass-errmsg {color:maroon; font-weight:bold}
+	div#i1-pass-input {position:relative; margin:2px 0 15px 0}
+	input#secure-pass {border-radius:4px 0 0 4px; width:250px}
+	div.error-pane {border:1px solid #efefef; border-left:4px solid #D54E21; padding:0 0 0 10px; margin:2px 0 10px 0}
+	div.dupx-ui-error {padding-top:2px; font-size:13px; line-height: 20px}
+	label.secure-lock {cursor:pointer}
 	
 	/* ======================================
 	STEP 1 VIEW
@@ -120,7 +138,7 @@
 	table.s2-db-test-dtls {text-align: left; margin: auto}
 	table.s2-db-test-dtls td:first-child {font-weight: bold}
 	div#s2-dbconn-test-msg {font-size:12px}
-	div#s2-dbconn-status {border:1px solid silver; border-radius:3px; background-color:#f9f9f9; padding:2px 5px; margin-top:10px; height:175px; overflow-y: scroll}
+	div#s2-dbconn-status {border:1px solid silver; border-radius:3px; background-color:#f9f9f9; padding:2px 5px; margin-top:10px; height:200px; overflow-y: scroll}
 	div#s2-dbconn-status div.warn-msg {text-align: left; padding:5px; margin:10px 0 10px 0}
 	div#s2-dbconn-status div.warn-msg b{color:maroon}
 
@@ -179,11 +197,10 @@
 	table.s4-final-step {width:100%;}
 	table.s4-final-step td {padding:5px 15px 5px 5px}
 	table.s4-final-step td:first-child {white-space:nowrap;}
-	div.s4-go-back {border-top:1px dotted #dfdfdf; margin:auto; font-style:italic; font-size:10px; color:#333}
-	a.s4-final-btns {display: block; width:145px; padding:5px; line-height: 1.4; background-color:#F1F1F1; border:1px solid silver;
-		color: #000; box-shadow: 5px 5px 5px -5px #949494; text-decoration: none; text-align: center; border-radius: 4px;
-	}
-	a.s4-final-btns:hover {background-color: #dfdfdf;}
+	div.s4-go-back {border-top:1px dotted #dfdfdf; margin:auto; font-style:italic; font-size:11px; color:#333; padding-top:4px}
+	div.s4-go-back ul {line-height:18px}
+	button.s4-final-btns {cursor:pointer; color:#fff; font-size:16px; border-radius:5px; padding:7px; background-color:#13659C; border:1px solid gray; width:165px;}
+	button.s4-final-btns:hover {background-color: #dfdfdf;}
 	div.s4-gopro-btn {text-align:center; font-size:14px; margin:auto; width:200px; font-style: italic; font-weight:bold}
 	div.s4-gopro-btn a{color:green}
 

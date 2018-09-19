@@ -497,7 +497,7 @@ if ( ! defined('ABSPATH')) exit;  // if direct access
 		$pagination_theme = $post_grid_meta_options['nav_bottom']['pagination_theme'];
 		}
 	else{
-		$pagination_theme = 'lite';
+		$pagination_theme = 'dark';
 		
 		}
 

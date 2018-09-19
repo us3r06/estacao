@@ -431,6 +431,7 @@ img {
   /* Make sure images are scaled correctly. */
   max-width: 100%;
   /* Adhere to container width. */
+  padding-right: 55px;
 }
 
 figure {
@@ -1411,7 +1412,7 @@ a:hover, a:active {
 
 .hm-header-sidebar {
   max-width: 100%;
-  margin: 20px 0 0;
+  margin: 10px 0 0;
   overflow: hidden;
   float: right;
 }
@@ -2269,12 +2270,15 @@ body {
 .header-main-area {
   overflow: hidden;
   clear: both;
+  background-image: url("https://www.multarte.com.br/wp-content/uploads/2018/03/MAPA-BRASIL-GENERAL.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .site-branding {
   float: left;
   max-width: 100%;
-  margin: 28px 0;
+  margin: 10px;
 }
 
 .site-title {
@@ -2360,7 +2364,7 @@ body {
 }
 
 .archive-thumb img {
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 @media (max-width: 768px) {
   .archive-thumb img {
@@ -2434,7 +2438,7 @@ body {
 
 .hm-author-img {
   float: left;
-  margin: 0 25px 0 0;
+  margin: 10px;
 }
 
 .hm-author-content {

@@ -310,16 +310,17 @@ class bwg_UploadHandler {
 
     function get_config_bytes($val) {
       $val = trim($val);
+	  $int_val = intval($val);
       $last = strtolower($val[strlen($val)-1]);
       switch($last) {
         case 'g':
-          $val *= 1024;
+          $int_val *= 1024;
         case 'm':
-          $val *= 1024;
+          $int_val *= 1024;
         case 'k':
-          $val *= 1024;
+          $int_val *= 1024;
       }
-      return $this->fix_integer_overflow($val);
+      return $this->fix_integer_overflow($int_val);
     }
 
     protected function validate($uploaded_file, $file, $error, $index) {
@@ -418,7 +419,13 @@ class bwg_UploadHandler {
       // into different directories or replacing hidden system files.
       // Also remove control characters and spaces (\x00..\x20) around the filename:
       $name = trim(stripslashes($name), ".\x00..\x20");
-      $name = str_replace(array(" ",'%'), array("_",''), $name);
+      $name = str_replace(array(" ",'%','&'), array("_",'',''), $name);
+      $tempname = explode(".", $name);
+
+      if ( $tempname[0] == '' ) {
+          $tempname[0] = 'unnamed-file';
+          $name = $tempname[0].".".$tempname[1];
+      }
       // Use a timestamp for empty filenames:
       if (!$name) {
         $name = str_replace('.', '-', microtime(true));
@@ -558,7 +565,8 @@ class bwg_UploadHandler {
             if (is_file($ex_file)) {
               $type = filetype($ex_file);
               $name = basename($ex_file);
-              $extension = end(explode(".", $name));
+              $extension = explode(".", $name);
+              $extension = end($extension);
               $name = str_replace('.' . $extension, strtolower('.' . $extension), $name);
               $index = null;
               $content_range = null;
@@ -885,7 +893,8 @@ class bwg_UploadHandler {
         // $_FILES is a multi-dimensional array:
         foreach ($upload['tmp_name'] as $index => $value) {
           $filename = $file_name ? $file_name : $upload['name'][$index];
-          $extension = end(explode(".", $filename));
+          $extension = explode(".", $filename);
+          $extension = end($extension);
           $filename = str_replace('.' . $extension, strtolower('.' . $extension), $filename);
             $files[] = $this->handle_file_upload(
                 $upload['tmp_name'][$index],
@@ -900,7 +909,8 @@ class bwg_UploadHandler {
       }
       else {
         $filename = $file_name ? $file_name : (isset($upload['name']) ? $upload['name'] : null);
-        $extension = end(explode(".", $filename));
+        $extension = explode(".", $filename);
+        $extension = end($extension);
         $filename = str_replace('.' . $extension, strtolower('.' . $extension), $filename);
         // param_name is a single object identifier like "file",
         // $_FILES is a one-dimensional array:

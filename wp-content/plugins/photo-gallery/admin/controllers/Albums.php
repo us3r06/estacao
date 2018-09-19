@@ -53,10 +53,12 @@ class AlbumsController_bwg {
     );
     $user = get_current_user_id();
     $screen = get_current_screen();
-    $option = $screen->get_option('per_page', 'option');
-    $this->items_per_page = get_user_meta($user, $option, TRUE);
-    if (empty ($this->items_per_page) || $this->items_per_page < 1) {
-      $this->items_per_page = $screen->get_option('per_page', 'default');
+	if ( !empty($screen) ) {
+		$option = $screen->get_option('per_page', 'option');
+		$this->items_per_page = get_user_meta($user, $option, TRUE);
+		if (empty ($this->items_per_page) || $this->items_per_page < 1) {
+		  $this->items_per_page = $screen->get_option('per_page', 'default');
+		}
     }
   }
 
@@ -101,7 +103,11 @@ class AlbumsController_bwg {
     }
     $params['items_per_page'] = $this->items_per_page;
     $page = (int)WDWLibrary::get('paged', 1);
+    if ( $page < 0 ) {
+      $page = 1;
+    }
     $page_num = $page ? ($page - 1) * $params['items_per_page'] : 0;
+    $params['paged'] = $page;
     $params['page_num'] = $page_num;
     $params['search'] = WDWLibrary::get('s', '');
 

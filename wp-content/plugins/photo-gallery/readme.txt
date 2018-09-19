@@ -3,7 +3,7 @@ Contributors: webdorado,wdsupport,photogallerysupport,10web
 Tags: gallery, photo gallery, image gallery, responsive gallery, wordpress gallery plugin, photo albums, gallery slider, gallery lightbox, wordpress photo gallery plugin, fullscreen gallery, watermarking, video gallery
 Requires at least: 3.4
 Tested up to: 4.9 
-Stable tag: 1.4.16
+Stable tag: 1.5.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -278,7 +278,69 @@ Choose whether to display random or the first/last specific number of images.
 
 
 == Changelog ==
-  
+
+= 1.5.4 =
+* Changed: Logic of including google fonts.       
+
+= 1.5.3 =
+* Fixed: Gallery widget with all images.     
+
+= 1.5.2 =
+* Fixed: Changed gallery index number on ID.   
+* Fixed: Conflict with lazy load.   
+* Fixed: Slideshow view.   
+
+= 1.5.1 =
+* Fixed: Minor bug   
+
+= 1.5.0 =
+* Added: "Resizable thumbnails" option for all views.  
+* Added: "Distance from container frame" option for all views.  
+* Added: "Zoom" hover effect for all views.  
+* Added: "Title font color (Show on hover)" option for all views.  
+* Added: "Show title on hover / Always show" option for masonry view.  
+* Added: Option to search images by Filename, Alt/Title, the description in the admin section.  
+* Added: Filters for image browser view.  
+* Added: Always show "Redirect URL" column on the gallery edit in the images table.  
+* Added: Ordering for galleries in a gallery group with all galleries list.  
+* Added: "Right-click protection" option on Image browser view.  
+* Improved: Image crop functionality.  
+* Improved: Move inline JS from all views to prevent conflict with some themes.  
+* Improved: Remove static CSS from carousel view to improve load time.  
+* Improved: Logic behind frontend AJAX calls to improve performance.  
+* Improved: Use the largest image file instead of the original image when the original file doesn't exist to prevent errors.  
+* Improved: Gallery edit page load time.  
+* Improved: Disabled the cron functionality in the free version.  
+* Improved: Masonry view HTML / CSS / JS sturcture.  
+* Improved: Mosaic view HTML / CSS / JS sturcture.  
+* Improved: Albums "Back" button styles.  
+* Improved: Filemanager load time.   
+* Improved: Do not add hashtag ids to browser history.  
+* Changed: Pause autoplay when the user is writing a comment.  
+* Changed: Apply Tag filter to image bulk-download.  
+* Changed: Keep active tab in the themes section after updating the settings.  
+* Changed: Removed Horizontal Masonry view.  
+* Fixed: Bug on inserting Photo Gallery shortcode via Text mode of the Editor.  
+* Fixed: Stretched thumbnails bug when Jetpack is enabled.  
+* Fixed: Crop with "Keep aspect ratio" Off.  
+* Fixed: WordFence warnings.  
+* Fixed: When opening a rated image, show a message that image is already rated.  
+* Fixed: Title and description in slideshow view appear only on the first image when the Scale-Out effect is selected.  
+* Fixed: Skipping some images when bulk-uploading images on a slow connection and PHP 7.1.  
+* Fixed: Infinite loading when you click on insert shortcode before the page is fully loaded.  
+* Fixed: Instagram gallery auto-update.  
+* Fixed: Bug with double quotes in Photo Gallery Widget title.  
+* Fixed: Bug on "Select all" in the Comments section when the comments are filtered.  
+* Fixed: Include Google Fonts only when needed.  
+* Fixed: Widgets preview in Elementor builder.   
+* Fixed: The first image is on the left in Slideshow view.   
+* Fixed: Conflict with "WP 1 Slider" plugin.   
+* Fixed: Bug on Comments moderation option.   
+* Fixed: Gallery duplication after Resetting the images with a large number of images.   
+
+= 1.4.17 =
+* Fixed: Bug on widgets added with SiteOrigin builder old versions    
+
 = 1.4.16 =
 * Fixed: Disable cron functionality in free version.    
 * Fixed: Title/description container visibility in lightbox.   

@@ -533,14 +533,7 @@ function meta_boxes_post_grid_input( $post ) {
 		
 		}			
 		
-	if(!empty($post_grid_meta_options['slider_navs_positon'])){
-		
-		$slider_navs_positon = $post_grid_meta_options['slider_navs_positon'];
-		}
-	else{
-		$slider_navs_positon = 'middle';
-		
-		}		
+
 		
 	if(!empty($post_grid_meta_options['slider_navs_style'])){
 		
@@ -758,7 +751,7 @@ function meta_boxes_post_grid_input( $post ) {
 		$pagination_theme = $post_grid_meta_options['nav_bottom']['pagination_theme'];
 		}
 	else{
-		$pagination_theme = 'lite';
+		$pagination_theme = 'dark';
 		
 		}			
 		
@@ -1556,191 +1549,8 @@ jQuery(document).ready(function($)
                 <div class="option-box">
                     <p class="option-title"><?php _e('Grid Type','post-grid'); ?></p>
                     <p class="option-info"><?php _e('Select grid type.','post-grid'); ?></p>
-                    
-                    <div class="grid-canvas">
-                    	
-                        
-                            
-                         	<label><input class="grid_type" <?php if($grid_type=='grid') echo 'checked'; ?>  type="radio" name="post_grid_meta_options[grid_type]" value="grid" />Grid</label>    
+                    <label><input class="grid_type" <?php if($grid_type=='grid') echo 'checked'; ?>  type="radio" name="post_grid_meta_options[grid_type]" value="grid" />Grid</label>
 
-                    
-                    	<div class="grid-preview">
-                        	
-                            <div class="grid-type-grid grid-type" style="display:<?php if($grid_type=='grid') echo 'block'; else echo 'none'; ?>" >
-                            
-                                	<div class="nav-top-search">
-                                    	<input type="text" placeholder="Search" value="" />
-                                        
-                                    </div>
-                                    
-<!-- 
-                                	<div class="per-page-count">
-                                    	<select >
-                                        	<option >10</option>
-                                        	<option >20</option>                                            
-                                        	<option >30</option>                                            
-                                        </select>
-                                        
-                                    </div> 
-
--->                                   
-                                    
-                            
-                            
-                            	<div class="items">
-                                    <div class="item">
-									<?php
-                                    
-                                    include post_grid_plugin_dir.'skins/index.php';
-                                    ?>
-                                    </div>
-                                    
-                                    <div class="item">
-									<?php
-                                    
-                                    include post_grid_plugin_dir.'skins/index.php';
-                                    ?>
-                                    </div>                                    
-                                    
-                                    <div class="item">
-									<?php
-                                    
-                                    include post_grid_plugin_dir.'skins/index.php';
-                                    ?>
-                                    </div>
-                                </div>
-                                
-                                
-                            	<div class="pagination">
-                                
-                                	<div class="pagination-none pagination-type">
-                                    	
-                                    </div>            
-                                                        
-                                	<div class="pagination-normal pagination-type">
-                                    	<div class="page">Next </div><div class="page">1</div><div class="page">2</div><div class="page">3</div><div class="page">Prev </div>
-                                    </div>
-                                    
-                                	<div class="pagination-jquery pagination-type">
-                                    	<div class="page"><i class="fa fa-angle-double-left"></i></div><div class="page">1</div><div class="page">2</div><div class="page">3</div><div class="page"> <i class="fa fa-angle-double-right"></i></div>
-                                    </div>
-                                    
-                                	<div class="pagination-loadmore pagination-type">
-                                    	<div class="page">Load more</div>
-                                    </div>                                    
-                                                                      
-                                	<div class="pagination-infinite pagination-type">
-                                    	<div class="page">Infinite Scroll <i class="fa fa-arrow-down"></i></div>
-                                    </div>                                     
-                                
-                                </div>                               
-                                
-                            </div>
-                            
-                            <div class="grid-type-filterable grid-type" style="display:<?php if($grid_type=='filterable') echo 'block'; else echo 'none'; ?>">
-                            
-                            	<div class="filter-menu yes">
-                                	<div class="filter">All</div><div class="filter">Menu 1</div><div class="filter">Menu 2</div><div class="filter">Menu 3</div>
-                                </div>   
-                            
-                            
-                            	<div class="items">
-                                	
-                                    <div class="item">
-									<?php
-                                    
-                                    include post_grid_plugin_dir.'skins/index.php';
-                                    ?>
-                                    </div>
-                                    
-                                    <div class="item">
-									<?php
-                                    
-                                    include post_grid_plugin_dir.'skins/index.php';
-                                    ?>
-                                    </div>                                    
-                                    
-                                    <div class="item">
-									<?php
-                                    
-                                    include post_grid_plugin_dir.'skins/index.php';
-                                    ?>
-                                    </div>                                    
-                                    
-                                    
-                                    
-                                    
-                                	
-                                </div>
-                            
-                            	<div class="pagination">
-                                
-                                	<div class="pagination-none pagination-type">
-                                    	
-                                    </div>            
-                                    
-                                	<div class="pagination-jquery pagination-type">
-                                    	<div class="page"><i class="fa fa-angle-double-left"></i></div><div class="page">1</div><div class="page">2</div><div class="page">3</div><div class="page"> <i class="fa fa-angle-double-right"></i></div>
-                                    </div>
-                                                                         
-                                
-                                </div>
-                            
-                            
-                            </div>                            
-                        
-                            <div class="grid-type-slider grid-type" style="display:<?php if($grid_type=='slider') echo 'block'; else echo 'none'; ?>">
-                            
-                            	<div class="navs slider-navs <?php echo $slider_navs_positon; ?>" style="display:<?php if($slider_navs=='true') echo 'block'; else echo 'none'; ?>">
-                                	<div class="nav next"><i class="fa fa-angle-double-right"></i></div>
-                                	<div class="nav prev"><i class="fa fa-angle-double-left"></i> </div>                                    
-                                    
-                                </div>
-                            
-                            	<div class="items">
-                                    <div class="item">
-									<?php
-                                    
-                                    include post_grid_plugin_dir.'skins/index.php';
-                                    ?>
-                                    </div>
-                                    
-                                    <div class="item">
-									<?php
-                                    
-                                    include post_grid_plugin_dir.'skins/index.php';
-                                    ?>
-                                    </div>                                    
-                                    
-                                    <div class="item">
-									<?php
-                                    
-                                    include post_grid_plugin_dir.'skins/index.php';
-                                    ?>
-                                    </div>
-                                </div>
-                            
-                            	<div class="dots slider-dots <?php echo $slider_dots_style; ?>" style="display:<?php if($slider_dots=='true') echo 'block'; else echo 'none'; ?>" >
-                                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-                                </div>  
-                            
-                            
-                            </div>                          
-                        
-                        </div>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    </div>
-                    
                     
                     
                </div>        

@@ -175,7 +175,7 @@ class BWGUpdate {
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_back_font_size` int(4) NOT NULL DEFAULT 16");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_back_font_weight` varchar(8) NOT NULL DEFAULT 'bold'");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_back_padding` varchar(32) NOT NULL DEFAULT '0'");
-      $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_title_font_color` varchar(8) NOT NULL DEFAULT 'CCCCCC'");
+      $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_title_font_color` varchar(8) NOT NULL DEFAULT '323A45'");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_title_font_style` varchar(16) NOT NULL DEFAULT 'segoe ui'");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_thumb_title_pos` varchar(8) NOT NULL DEFAULT 'bottom'");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_title_font_size` int(4) NOT NULL DEFAULT 14");
@@ -183,18 +183,18 @@ class BWGUpdate {
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_title_margin` varchar(32) NOT NULL DEFAULT '2px'");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_title_shadow` varchar(32) NOT NULL DEFAULT '0px 0px 0px #888888'");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_thumb_margin` int(4) NOT NULL DEFAULT 4");
-      $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_thumb_padding` int(4) NOT NULL DEFAULT 0");
+      $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_thumb_padding` int(4) NOT NULL DEFAULT 4");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_thumb_border_radius` varchar(32) NOT NULL DEFAULT '0'");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_thumb_border_width` int(4) NOT NULL DEFAULT 0");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_thumb_border_style` varchar(8) NOT NULL DEFAULT 'none'");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_thumb_border_color` varchar(8) NOT NULL DEFAULT 'CCCCCC'");
-      $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_thumb_bg_color` varchar(8) NOT NULL DEFAULT 'FFFFFF'");
+      $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_thumb_bg_color` varchar(8) NOT NULL DEFAULT '000000'");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_thumbs_bg_color` varchar(8) NOT NULL DEFAULT 'FFFFFF'");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_thumb_bg_transparent` int(4) NOT NULL DEFAULT 0");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_thumb_box_shadow` varchar(32) NOT NULL DEFAULT '0px 0px 0px #888888'");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_thumb_transparent` int(4) NOT NULL DEFAULT 100");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_thumb_align` varchar(8) NOT NULL DEFAULT 'center'");
-      $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_thumb_hover_effect` varchar(64) NOT NULL DEFAULT 'scale'");
+      $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_thumb_hover_effect` varchar(64) NOT NULL DEFAULT 'zoom'");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_thumb_hover_effect_value` varchar(64) NOT NULL DEFAULT '1.1'");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `album_masonry_thumb_transition` tinyint(1) NOT NULL DEFAULT 0");
     }
@@ -231,7 +231,9 @@ class BWGUpdate {
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_gallery ADD `gallery_source` varchar(64) NOT NULL DEFAULT ''");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_gallery ADD `update_flag` varchar(32) NOT NULL DEFAULT ''");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_gallery ADD `autogallery_image_number` int(4) NOT NULL DEFAULT 12");
-      wp_schedule_event(time(), 'bwg_autoupdate_interval', 'bwg_schedule_event_hook');
+      if ( BWG()->is_pro ) {
+        wp_schedule_event(time(), 'bwg_autoupdate_interval', 'bwg_schedule_event_hook');
+      }
       /*auto-filling image meta description*/
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_option ADD `description_tb` tinyint(1) NOT NULL DEFAULT 1");
       /*convert old videos with "YOUTUBE" and "VIMEO" videos to new EMBED format*/

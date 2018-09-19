@@ -55,21 +55,21 @@ class BWGModelGalleryBox {
     if ( $filter_search_name_temp == '' ) {  /* for thumbnail view */
       $filter_search_name_temp = WDWLibrary::get('filter_search_name_' . $bwg);
       if ( $filter_search_name_temp != '' ) {
-        $filter_search_name = $filter_search_name_temp;
+        $filter_search_name = trim($filter_search_name_temp);
       }
     }
     else {
-      $filter_search_name = $filter_search_name_temp;
+      $filter_search_name = trim($filter_search_name_temp);
     }
 
     $where = '';
-    if ( !empty($filter_search_name) ) {
-      $bwg_search_keys = explode(' ', trim($filter_search_name));
+    if ( $filter_search_name !== '' ) {
+      $bwg_search_keys = explode(' ', $filter_search_name);
       $alt_search = '(';
       $description_search = '(';
       foreach( $bwg_search_keys as $search_key) {
-        $alt_search .= '`image`.`alt` LIKE "%' . $search_key . '%" AND ';
-        $description_search .= '`image`.`description` LIKE "%' . $search_key . '%" AND ';
+        $alt_search .= '`image`.`alt` LIKE "%' . trim($search_key) . '%" AND ';
+        $description_search .= '`image`.`description` LIKE "%' . trim($search_key) . '%" AND ';
       }
       $alt_search = rtrim($alt_search, 'AND ');
       $alt_search .= ')';
@@ -88,7 +88,7 @@ class BWGModelGalleryBox {
       $where .= ' AND CONCAT(",", tags.tags_combined, ",") REGEXP ",(' . implode("|", $filter_tags) . ')," ';
     }
 
-    $rows = $wpdb->get_results('SELECT image.*, rates.rate FROM ' . $wpdb->prefix . 'bwg_image as image LEFT JOIN (SELECT rate, image_id FROM ' . $wpdb->prefix . 'bwg_image_rate WHERE ip="%s") as rates ON image.id=rates.image_id ' . $join . ' WHERE image.published=1 ' . $where . ' ORDER BY ' . str_replace('RAND()', 'RAND(' . $bwg_random_seed . ')', $sort_by) . ' ' . $order_by);
+    $rows = $wpdb->get_results('SELECT image.*, rates.rate FROM ' . $wpdb->prefix . 'bwg_image as image LEFT JOIN (SELECT rate, image_id FROM ' . $wpdb->prefix . 'bwg_image_rate WHERE ip="' . $_SERVER['REMOTE_ADDR'] . '") as rates ON image.id=rates.image_id ' . $join . ' WHERE image.published=1 ' . $where . ' ORDER BY ' . str_replace('RAND()', 'RAND(' . $bwg_random_seed . ')', $sort_by) . ' ' . $order_by);
 
     $images = array();
     if ( !empty($rows) ) {

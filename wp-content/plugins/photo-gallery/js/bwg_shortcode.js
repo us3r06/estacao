@@ -206,13 +206,13 @@ function bwg_shortcode_hide_show_params() {
   if (jQuery('#slideshow_enable_ctrl_yes').is(':checked')) {
     jQuery("#tr_autohide_slideshow_navigation").show();
   }
-  if (jQuery('#image_enable_page_loadmore').is(':checked')) {
+  if (jQuery('#image_enable_page_2').is(':checked')) {
     jQuery("#tr_load_more_image_count").show();
   }
-  if (jQuery('#masonry_image_enable_page_loadmore').is(':checked')) {
+  if (jQuery('#masonry_image_enable_page_2').is(':checked')) {
     jQuery("#tr_masonry_load_more_image_count").show();
   }
-  if (jQuery('#mosaic_image_enable_page_loadmore').is(':checked')) {
+  if (jQuery('#mosaic_image_enable_page_2').is(':checked')) {
     jQuery("#tr_mosaic_load_more_image_count").show();
   }
   if (jQuery('#blog_style_enable_page_2').is(':checked')) {
@@ -389,7 +389,7 @@ function bwg_gallery_type(gallery_type) {
     case 'thumbnails': {
       jQuery('#options_link').attr('href', jQuery('#options_link').attr('data-href') + '&active_tab=1&gallery_type=' + gallery_type);
       jQuery("#tr_gallery").css('display', '');
-	  jQuery("#tr_ecommerce_icon_hover").css('display', '');
+	    jQuery("#tr_ecommerce_icon_hover").css('display', '');
       jQuery("#tr_ecommerce_icon_hover .ecommerce_icon_show").css('display', '');  
       jQuery("#tr_tag").css('display', '');
       jQuery("#bwg_pro_version").html('Thumbnails');
@@ -401,7 +401,7 @@ function bwg_gallery_type(gallery_type) {
     }
     case 'thumbnails_masonry': {
       jQuery('#options_link').attr('href', jQuery('#options_link').attr('data-href') + '&active_tab=1&gallery_type=' + gallery_type);
-	  jQuery("#tr_ecommerce_icon_hover").css('display', '');
+	    jQuery("#tr_ecommerce_icon_hover").css('display', '');
       jQuery("#tr_gallery").css('display', '');
       jQuery("#tr_tag").css('display', '');
       jQuery("#bwg_pro_version").html('Masonry');
@@ -415,7 +415,7 @@ function bwg_gallery_type(gallery_type) {
     }
     case 'thumbnails_mosaic': {
       jQuery('#options_link').attr('href', jQuery('#options_link').attr('data-href') + '&active_tab=1&gallery_type=' + gallery_type);
-	  jQuery("#tr_ecommerce_icon_hover ").css('display', '');
+  	  jQuery("#tr_ecommerce_icon_hover ").css('display', '');
       jQuery("#tr_gallery").css('display', '');
       jQuery("#tr_tag").css('display', '');
       jQuery("#bwg_pro_version").html('Mosaic');

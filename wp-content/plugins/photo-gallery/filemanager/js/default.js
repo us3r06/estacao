@@ -19,7 +19,6 @@ jQuery(document).ready(function () {
   wdb_all_files_filtered = wdb_all_files;
   var all_items_count = wdb_all_files_filtered.length;
   var page = 2;
-
   jQuery("#explorer_body_container").scroll(function () {
     var explorer_item_count = jQuery("#explorer_body .explorer_item").length;
     if ( ajax && explorer_item_count < all_items_count ) {
@@ -200,7 +199,6 @@ function submitFiles() {
   if (filesSelected.length == 0) {
     return;
   }
-
   var filesValid = [];
   if (all_files_selected === true) {
     for (i in wdb_all_files_filtered) {
@@ -258,7 +256,6 @@ function submitFiles() {
       }
     }
   }
-
   window.parent[callback](filesValid);
   window.parent.tb_remove();
 }
@@ -656,7 +653,7 @@ function ajax_print_images(files, element, view_type, count) {
     var item_number = count;
     count++;
     var item_thumb = '<span class="item_thumb"><img src="' + corent_file['thumb'] + '"/></span>';
-    var item_icon = '<span class="item_icon"><img src="'+corent_file['icon']+'"/> </span>';
+    var item_icon = '<span class="item_icon"><img src="'+corent_file['thumb']+'"/> </span>';
     var item_name = '<span class="item_name">'+corent_file['name']+'</span>';
     var item_size = '<span class="item_size">'+corent_file['size']+'</span>';
     var item_date_modified = '<span class="item_date_modified">'+corent_file['date_modified']+'</span>';

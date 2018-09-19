@@ -85,6 +85,7 @@ class OptionsController_bwg {
     }
 
     $params['row']  = $row;
+    $params['row']->lightbox_shortcode = 0;
     $params['page'] = $this->page;
     $params['imgcount'] = $this->model->get_image_count();
     $params['options_url_ajax'] = add_query_arg( array(
@@ -110,7 +111,7 @@ class OptionsController_bwg {
   public function reset( $params = array() ) {
     $params['row'] = new WD_BWG_Options(true);
     $params['page'] = $this->page;
-	  $params['imgcount'] = $this->model->get_image_count();
+	$params['imgcount'] = $this->model->get_image_count();
     $params['options_url_ajax'] = add_query_arg( array(
 													'action' => 'options_' . BWG()->prefix,
 													BWG()->nonce => wp_create_nonce(BWG()->nonce),
@@ -175,7 +176,7 @@ class OptionsController_bwg {
       if ($name == 'autoupdate_interval') {
         $autoupdate_interval = (isset($_POST['autoupdate_interval_hour']) && isset($_POST['autoupdate_interval_min']) ? ((int) $_POST['autoupdate_interval_hour'] * 60 + (int) $_POST['autoupdate_interval_min']) : null);
         /*minimum autoupdate interval is 1 min*/
-        $row->autoupdate_interval = isset($autoupdate_interval) && $autoupdate_interval >= 1 ? $autoupdate_interval : 1;
+        $row->autoupdate_interval = isset($autoupdate_interval) && $autoupdate_interval >= 1 ? $autoupdate_interval : 30;
       }
       else if ($name != 'images_directory' && isset($_POST[$name])) {
         $row->$name = esc_html(stripslashes($_POST[$name]));
@@ -202,13 +203,15 @@ class OptionsController_bwg {
         echo WDWLibrary::message_id(0, __('Item Succesfully Saved.', BWG()->prefix));
       }
 
-      // Clear hook for scheduled events.
-      wp_clear_scheduled_hook( 'bwg_schedule_event_hook' );
-      // Refresh filter according to new time interval.
-      remove_filter( 'cron_schedules', array(BWG(), 'autoupdate_interval') );
-      add_filter( 'cron_schedules', array(BWG(), 'autoupdate_interval') );
-      // Then add new schedule with the same hook name.
-      wp_schedule_event( time(), 'bwg_autoupdate_interval', 'bwg_schedule_event_hook' );
+      if ( BWG()->is_pro ) {
+        // Clear hook for scheduled events.
+        wp_clear_scheduled_hook('bwg_schedule_event_hook');
+        // Refresh filter according to new time interval.
+        remove_filter('cron_schedules', array( BWG(), 'autoupdate_interval' ));
+        add_filter('cron_schedules', array( BWG(), 'autoupdate_interval' ));
+        // Then add new schedule with the same hook name.
+        wp_schedule_event(time(), 'bwg_autoupdate_interval', 'bwg_schedule_event_hook');
+      }
     }
   }
 
@@ -269,8 +272,10 @@ class OptionsController_bwg {
         continue;
       }
       $file_path = str_replace("thumb", ".original", htmlspecialchars_decode(BWG()->upload_dir . $img_id->thumb_url, ENT_COMPAT | ENT_QUOTES));
-      $new_file_path = htmlspecialchars_decode(BWG()->upload_dir . $img_id->thumb_url, ENT_COMPAT | ENT_QUOTES);
-      WDWLibrary::resize_image($file_path, $new_file_path, $max_width, $max_height);
+      $new_file_path = htmlspecialchars_decode( BWG()->upload_dir . $img_id->thumb_url, ENT_COMPAT | ENT_QUOTES );
+      if ( WDWLibrary::repair_image_original($file_path) ) {
+        WDWLibrary::resize_image( $file_path, $new_file_path, $max_width, $max_height );
+      }
     }
   }
 }

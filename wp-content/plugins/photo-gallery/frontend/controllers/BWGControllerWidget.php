@@ -16,7 +16,6 @@ class BWGControllerWidgetFrontEnd {
 
     require_once BWG()->plugin_dir . "/frontend/views/BWGViewWidget.php";
     $view = new BWGViewWidgetFrontEnd($model);
-    
     $view->view_tags($params);
   }
 }

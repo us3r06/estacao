@@ -1,5 +1,6 @@
 <?php
 if (!defined('DUPLICATOR_VERSION')) exit; // Exit if accessed directly
+require_once(DUPLICATOR_PLUGIN_PATH . '/classes/class.password.php');
 
 class DUP_Installer
 {
@@ -10,6 +11,8 @@ class DUP_Installer
     public $OptsDBPort;
     public $OptsDBName;
     public $OptsDBUser;
+	public $OptsSecureOn = 0;
+	public $OptsSecurePass;
     //PROTECTED
     protected $Package;
 
@@ -63,11 +66,14 @@ class DUP_Installer
             "classes/class.db.php"					=> "@@CLASS.DB.PHP@@",
             "classes/class.logging.php"				=> "@@CLASS.LOGGING.PHP@@",
             "classes/class.engine.php"				=> "@@CLASS.ENGINE.PHP@@",
+			"classes/class.http.php"				=> "@@CLASS.HTTP.PHP@@",
             "classes/config/class.conf.wp.php"		=> "@@CLASS.CONF.WP.PHP@@",
             "classes/config/class.conf.srv.php"		=> "@@CLASS.CONF.SRV.PHP@@",
+			"classes/class.password.php"			=> "@@CLASS.PASSWORD.PHP@@",
 			"ctrls/ctrl.step1.php"					=> "@@CTRL.STEP1.PHP@@",
             "ctrls/ctrl.step2.php"					=> "@@CTRL.STEP2.PHP@@",
             "ctrls/ctrl.step3.php"					=> "@@CTRL.STEP3.PHP@@",
+			"view.init1.php"						=> "@@VIEW.INIT1.PHP@@",
             "view.step1.php"						=> "@@VIEW.STEP1.PHP@@",
             "view.step2.php"						=> "@@VIEW.STEP2.PHP@@",
             "view.step3.php"						=> "@@VIEW.STEP3.PHP@@",
@@ -139,6 +145,9 @@ class DUP_Installer
 
 		 DUP_Log::Info("PACK SIZE: {$this->Package->Size}");
 
+		 $hasher = new DUP_PasswordHash(8, FALSE);
+		 $pass_hash = $hasher->HashPassword($this->Package->Installer->OptsSecurePass);
+
         $replace_items = Array(
             //COMPARE VALUES
             "fwrite_created" => $this->Package->Created,
@@ -151,13 +160,15 @@ class DUP_Installer
             "fwrite_url_old" => get_option('siteurl'),
             "fwrite_archive_name" => "{$this->Package->NameHash}_archive.zip",
 			"fwrite_archive_onlydb" => $this->Package->Archive->ExportOnlyDB,
-            "fwrite_package_notes" => $this->Package->Notes,
-			"fwrite_package_size" => $this->Package->Archive->Size,
-            "fwrite_secure_name" => $this->Package->NameHash,
-            "fwrite_dbhost" => $this->Package->Installer->OptsDBHost,
-            "fwrite_dbport" => $this->Package->Installer->OptsDBPort,
-            "fwrite_dbname" => $this->Package->Installer->OptsDBName,
-            "fwrite_dbuser" => $this->Package->Installer->OptsDBUser,
+            "fwrite_package_notes"	=> $this->Package->Notes,
+			"fwrite_package_size"	=> $this->Package->Archive->Size,
+            "fwrite_secure_name"	=> $this->Package->NameHash,
+            "fwrite_dbhost"			=> $this->Package->Installer->OptsDBHost,
+            "fwrite_dbport"			=> $this->Package->Installer->OptsDBPort,
+            "fwrite_dbname"			=> $this->Package->Installer->OptsDBName,
+            "fwrite_dbuser"			=> $this->Package->Installer->OptsDBUser,
+			"fwrite_secureon"		=> $this->Package->Installer->OptsSecureOn,
+			"fwrite_securepass"		=> $pass_hash,
             "fwrite_dbpass" => '',
             "fwrite_wp_tableprefix" => $wpdb->prefix,
             "fwrite_opts_delete" => json_encode($deleteOpts),

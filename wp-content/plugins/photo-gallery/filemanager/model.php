@@ -10,7 +10,7 @@ $s_order;
 
 class FilemanagerModel {
   private $controller;
-  private $element_load_count = 100;
+  private $element_load_count = 60;
 
   public function __construct($controller) {
     $this->controller = $controller;
@@ -76,8 +76,7 @@ class FilemanagerModel {
   }
 
   function get_files($sort_by, $sort_order) {
-    $icons_dir_path = BWG()->plugin_dir . '/filemanager/images/file_icons';
-    $icons_dir_url = BWG()->plugin_url . '/filemanager/images/file_icons';
+    $icons_dir_url = BWG()->plugin_url . '/filemanager/images';
     $valid_types = explode(',', isset($_REQUEST['extensions']) ? strtolower(esc_html($_REQUEST['extensions'])) : '*');
     $dir = (isset($_REQUEST['dir']) ? '/' . htmlspecialchars_decode(stripslashes(esc_html(str_replace('../', '', $_REQUEST['dir']))), ENT_COMPAT | ENT_QUOTES) : '');
     $parent_dir = $this->controller->get_uploads_dir() . $dir;
@@ -100,7 +99,6 @@ class FilemanagerModel {
         $file['filename'] = str_replace("_", " ", $file_name);
         $file['type'] = '';
         $file['thumb'] = $icons_dir_url . '/dir.png';
-        $file['icon'] = $icons_dir_url . '/dir.png';
         $file['size'] = '';
         $file['date_modified'] = '';
         $file['resolution'] = '';
@@ -115,12 +113,7 @@ class FilemanagerModel {
         $file['filename'] = str_replace("_", " ", $filename);
         $file_extension = explode('.', $file_name);
         $file['type'] = strtolower(end($file_extension));
-        $icon = $icons_dir_url . '/' . $file['type'] . '.png';
-        if (file_exists($icons_dir_path . '/' . $file['type'] . '.png') == FALSE) {
-          $icon = $icons_dir_url . '/' . '_blank.png';
-        }
-        $file['thumb'] = $this->is_img($file['type']) ? $parent_dir_url . '/thumb/' . $file_name : $icon;
-        $file['icon'] = $icon;
+        $file['thumb'] = $parent_dir_url . '/thumb/' . $file_name;
         if (($valid_types[0] != '*') && (in_array($file['type'], $valid_types) == FALSE)) {
           continue;
         }
